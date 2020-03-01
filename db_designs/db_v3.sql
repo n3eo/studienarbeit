@@ -80,7 +80,7 @@ CREATE TABLE `Ausleihe` (
   `TransaktionsId` INTEGER(11) NOT NULL AUTO_INCREMENT,
   `AusleiherId` INTEGER(11) NOT NULL,
   `Ausleihdatum` TIMESTAMP NOT NULL DEFAULT NOW(),
-  `Rückgabedatum` DATE NULL DEFAULT NULL,
+  `Rückgabedatum` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`TransaktionsId`)
 );
 
