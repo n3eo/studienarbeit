@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- SQL XML created by WWW SQL Designer, https://github.com/ondras/wwwsqldesigner/ -->
-<!-- Active URL: http://localhost:8000/ -->
+<!-- Active URL: http://127.0.0.1:8000/ -->
 <sql>
     <datatypes db="mysql">
         <group label="Numeric" color="rgb(238,238,170)">
@@ -117,15 +117,15 @@
             <datatype>VARCHAR(13)</datatype>
             <relation table="Buch" row="ISBN" />
             <relation table="Ebooks" row="ISBN" />
-            <relation table="Hörbuch" row="ISBN" />
+            <relation table="Hoerbuch" row="ISBN" />
             <relation table="NichtTextMedien" row="NichtTextMedienId" />
         </row>
         <row name="Ausleihdatum" null="0" autoincrement="0">
-            <datatype>DATE</datatype>
-            <default>CURRENT_TIMESTAMP</default>
+            <datatype>TIMESTAMP</datatype>
+            <default>'NOW()'</default>
         </row>
         <row name="Rückgabedatum" null="1" autoincrement="0">
-            <datatype>DATE</datatype>
+            <datatype>TIMESTAMP</datatype>
             <default>NULL</default>
         </row>
         <key type="PRIMARY" name="">
@@ -198,9 +198,8 @@
         </key>
     </table>
     <table x="1541" y="2067" name="Sorte">
-        <row name="SorteId" null="1" autoincrement="1">
+        <row name="SorteId" null="0" autoincrement="1">
             <datatype>INTEGER(11)</datatype>
-            <default>NULL</default>
         </row>
         <row name="Name" null="1" autoincrement="0">
             <datatype>VARCHAR(20)</datatype>
@@ -293,7 +292,7 @@
             <part>VideoId</part>
         </key>
     </table>
-    <table x="1538" y="1889" name="Hörbuch">
+    <table x="1538" y="1889" name="Hoerbuch">
         <row name="ISBN" null="0" autoincrement="0">
             <datatype>VARCHAR(13)</datatype>
         </row>
@@ -315,9 +314,8 @@
         </key>
     </table>
     <table x="1999" y="2065" name="Bild">
-        <row name="BildId" null="1" autoincrement="0">
+        <row name="BildId" null="0" autoincrement="1">
             <datatype>INTEGER(11)</datatype>
-            <default>NULL</default>
         </row>
         <row name="NichtMedienTextId" null="0" autoincrement="0">
             <datatype>VARCHAR(13)</datatype>
@@ -337,9 +335,9 @@
     </table>
     <table x="2051" y="1929" name="MediumWortZuord">
         <row name="MediumId" null="0" autoincrement="0">
-            <datatype>INTEGER(11)</datatype>
+            <datatype>VARCHAR(13)</datatype>
             <relation table="NichtTextMedien" row="NichtTextMedienId" />
-            <relation table="Hörbuch" row="ISBN" />
+            <relation table="Hoerbuch" row="ISBN" />
             <relation table="Buch" row="ISBN" />
             <relation table="Ebooks" row="ISBN" />
         </row>
@@ -390,7 +388,6 @@
         </row>
         <row name="Typ" null="0" autoincrement="0">
             <datatype>ENUM("Bild","Video")</datatype>
-            <default>NULL</default>
         </row>
         <key type="PRIMARY" name="">
             <part>NichtTextMedienId</part>
