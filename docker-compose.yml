@@ -1,0 +1,48 @@
+version: '3'
+
+networks:
+  wpsite:
+
+services:
+  # Database
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: nico_studienarbeit
+      MYSQL_USER: studienarbeit
+      MYSQL_PASSWORD: dbstuar2020
+    networks:
+      - wpsite
+  # phpmyadmin
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8181:80'
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: password 
+    networks:
+      - wpsite
+  #jupyter
+  jupyter:
+    depends_on:
+      - db
+    image: jupyter/minimal-notebook
+    volumes:
+      - ./jupyter:/jupyter
+    working_dir: /jupyter
+    restart: always
+    ports:
+      - '8080:8888'
+    networks:
+      - wpsite
+
+volumes:
+  db_data:

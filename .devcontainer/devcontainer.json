@@ -1,0 +1,11 @@
+{
+    "name": "jupyter",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "jupyter",
+    "workspaceFolder": "/jupyter",
+    "extensions": [
+        "donjayamanne.jupyter",
+        "ms-python.python",
+        
+    ]
+}
