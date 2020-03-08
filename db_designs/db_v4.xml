@@ -123,7 +123,7 @@
         </row>
         <row name="Ausleihdatum" null="0" autoincrement="0">
             <datatype>TIMESTAMP</datatype>
-            <default>'NOW()'</default>
+            <default>'CURRENT_TIMESTAMP'</default>
         </row>
         <row name="Rückgabedatum" null="1" autoincrement="0">
             <datatype>TIMESTAMP</datatype>
