@@ -107,7 +107,7 @@
         </key>
     </table>
     <table x="1952" y="1627" name="Ausleihe">
-        <row name="TransaktionsId" null="0" autoincrement="0">
+        <row name="TransaktionsId" null="0" autoincrement="1">
             <datatype>INTEGER(11)</datatype>
         </row>
         <row name="AusleiherId" null="0" autoincrement="0">
