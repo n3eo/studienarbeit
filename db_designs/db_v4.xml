@@ -22,6 +22,7 @@
             <type label="Binary" length="1" sql="BINARY" quote="'"/>
             <type label="Varbinary" length="1" sql="VARBINARY" quote="'"/>
             <type label="BLOB" length="0" sql="BLOB" re="BLOB" quote="'"/>
+            <type label="LONGBLOB" length="0" sql="LONGBLOB" re="LONGBLOB" quote="'"/>
         </group>
 
         <group label="Date &amp; Time" color="rgb(200,255,200)">
@@ -280,7 +281,7 @@
         <row name="VideoId" null="0" autoincrement="1">
             <datatype>INTEGER(11)</datatype>
         </row>
-        <row name="NichtMedienTextId" null="0" autoincrement="0">
+        <row name="NichtTextMedienId" null="0" autoincrement="0">
             <datatype>VARCHAR(13)</datatype>
             <relation table="NichtTextMedien" row="NichtTextMedienId" />
         </row>
@@ -317,12 +318,12 @@
         <row name="BildId" null="0" autoincrement="1">
             <datatype>INTEGER(11)</datatype>
         </row>
-        <row name="NichtMedienTextId" null="0" autoincrement="0">
+        <row name="NichtTextMedienId" null="0" autoincrement="0">
             <datatype>VARCHAR(13)</datatype>
             <relation table="NichtTextMedien" row="NichtTextMedienId" />
         </row>
         <row name="Bild" null="1" autoincrement="0">
-            <datatype>BLOB</datatype>
+            <datatype>LONGBLOB</datatype>
             <default>NULL</default>
         </row>
         <row name="MalerId" null="0" autoincrement="0">

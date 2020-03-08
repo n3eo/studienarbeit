@@ -185,7 +185,7 @@ CREATE TABLE `Sprecher` (
 		
 CREATE TABLE `Video` (
   `VideoId` INTEGER(11) NOT NULL AUTO_INCREMENT,
-  `NichtMedienTextId` VARCHAR(13) NOT NULL,
+  `NichtTextMedienId` VARCHAR(13) NOT NULL,
   `Sprache` ENUM("deutsch","englisch","franzoesisch","spanisch","griechisch") NULL DEFAULT NULL,
   PRIMARY KEY (`VideoId`)
 );
@@ -210,8 +210,8 @@ CREATE TABLE `Hoerbuch` (
 		
 CREATE TABLE `Bild` (
   `BildId` INTEGER(11) NOT NULL AUTO_INCREMENT,
-  `NichtMedienTextId` VARCHAR(13) NOT NULL,
-  `Bild` BLOB NULL DEFAULT NULL,
+  `NichtTextMedienId` VARCHAR(13) NOT NULL,
+  `Bild` LONGBLOB NULL DEFAULT NULL,
   `MalerId` INTEGER(11) NOT NULL,
   PRIMARY KEY (`BildId`)
 );
@@ -271,11 +271,11 @@ ALTER TABLE `Autor` ADD FOREIGN KEY (PersonenId) REFERENCES `Person` (`PersonenI
 ALTER TABLE `Ausleiher` ADD FOREIGN KEY (PersonenId) REFERENCES `Person` (`PersonenId`);
 ALTER TABLE `Ebooks` ADD FOREIGN KEY (BuchISBN) REFERENCES `Buch` (`ISBN`);
 ALTER TABLE `Sprecher` ADD FOREIGN KEY (PersonenId) REFERENCES `Person` (`PersonenId`);
-ALTER TABLE `Video` ADD FOREIGN KEY (NichtMedienTextId) REFERENCES `NichtTextMedien` (`NichtTextMedienId`);
+ALTER TABLE `Video` ADD FOREIGN KEY (NichtTextMedienId) REFERENCES `NichtTextMedien` (`NichtTextMedienId`);
 ALTER TABLE `Hoerbuch` ADD FOREIGN KEY (BuchISBN) REFERENCES `Buch` (`ISBN`);
 ALTER TABLE `Hoerbuch` ADD FOREIGN KEY (SprecherId) REFERENCES `Sprecher` (`SprecherId`);
 ALTER TABLE `Hoerbuch` ADD FOREIGN KEY (VerlagId) REFERENCES `Verlag` (`VerlagId`);
-ALTER TABLE `Bild` ADD FOREIGN KEY (NichtMedienTextId) REFERENCES `NichtTextMedien` (`NichtTextMedienId`);
+ALTER TABLE `Bild` ADD FOREIGN KEY (NichtTextMedienId) REFERENCES `NichtTextMedien` (`NichtTextMedienId`);
 ALTER TABLE `Bild` ADD FOREIGN KEY (MalerId) REFERENCES `Maler` (`MalerId`);
 ALTER TABLE `MediumWortZuord` ADD FOREIGN KEY (MediumId) REFERENCES `NichtTextMedien` (`NichtTextMedienId`);
 ALTER TABLE `MediumWortZuord` ADD FOREIGN KEY (MediumId) REFERENCES `Hoerbuch` (`ISBN`);
@@ -333,11 +333,11 @@ ALTER TABLE `NichtTextMedien` ADD FOREIGN KEY (SorteId) REFERENCES `Sorte` (`Sor
 -- ('','','');
 -- INSERT INTO `Sprecher` (`SprecherId`,`PersonenId`,`Beschreibung`) VALUES
 -- ('','','');
--- INSERT INTO `Video` (`VideoId`,`NichtMedienTextId`,`Sprache`) VALUES
+-- INSERT INTO `Video` (`VideoId`,`NichtTextMedienId`,`Sprache`) VALUES
 -- ('','','');
 -- INSERT INTO `Hoerbuch` (`ISBN`,`BuchISBN`,`SprecherId`,`VerlagId`) VALUES
 -- ('','','','');
--- INSERT INTO `Bild` (`BildId`,`NichtMedienTextId`,`Bild`,`MalerId`) VALUES
+-- INSERT INTO `Bild` (`BildId`,`NichtTextMedienId`,`Bild`,`MalerId`) VALUES
 -- ('','','','');
 -- INSERT INTO `MediumWortZuord` (`MediumId`,`Wort`) VALUES
 -- ('','');
