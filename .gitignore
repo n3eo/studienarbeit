@@ -4,3 +4,4 @@ wwwsqldesigner/
 .ipynb_checkpoints/
 .vscode
 .pyc
+__pycache__
