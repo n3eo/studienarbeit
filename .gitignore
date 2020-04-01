@@ -3,3 +3,4 @@ db_alt/
 wwwsqldesigner/
 .ipynb_checkpoints/
 .vscode
+.pyc
