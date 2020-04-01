@@ -69,7 +69,7 @@
 <datatype>VARCHAR(20)</datatype>
 <default>NULL</default></row>
 <row name="Sprache" null="1" autoincrement="0">
-<datatype>ENUM("deutsch","englisch","französisch","spanisch","griechisch")</datatype>
+<datatype>VARCHAR(20)</datatype>
 <default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>ISBN</part>
@@ -181,9 +181,9 @@
 <row name="SorteId" null="0" autoincrement="1">
 <datatype>INTEGER(11)</datatype>
 </row>
-<row name="Name" null="1" autoincrement="0">
+<row name="Name" null="0" autoincrement="0">
 <datatype>VARCHAR(20)</datatype>
-<default>NULL</default></row>
+</row>
 <row name="Beschreibung" null="1" autoincrement="0">
 <datatype>MEDIUMTEXT</datatype>
 <default>NULL</default></row>

@@ -47,9 +47,9 @@ CREATE TABLE `Buch` (
   `Kurzbeschreibung` VARCHAR(100) NULL DEFAULT NULL,
   `Preis` DECIMAL(10,3) NULL DEFAULT NULL,
   `Auflage` VARCHAR(20) NULL DEFAULT NULL,
-  `Sprache` ENUM("deutsch","englisch","franzoesisch","spanisch","griechisch") NULL DEFAULT NULL,
+  `Sprache` VARCHAR(20) NULL DEFAULT NULL,
   PRIMARY KEY (`ISBN`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Person'
@@ -63,7 +63,7 @@ CREATE TABLE `Person` (
   `Email` VARCHAR(30) NULL DEFAULT NULL,
   `Geburtsdatum` DATE NULL DEFAULT NULL,
   PRIMARY KEY (`PersonenId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Ausleihe'
@@ -77,7 +77,7 @@ CREATE TABLE `Ausleihe` (
   `Ausleihdatum` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Rückgabedatum` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`TransaktionsId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'AutorBuchZuord'
@@ -86,7 +86,7 @@ CREATE TABLE `Ausleihe` (
 CREATE TABLE `AutorBuchZuord` (
   `AutorId` INTEGER(11) NOT NULL,
   `ISBN` VARCHAR(13) NOT NULL
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Autor'
@@ -98,7 +98,7 @@ CREATE TABLE `Autor` (
   `PersonenId` INTEGER(11) NOT NULL,
   `Beschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`AutorId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Ausleiher'
@@ -113,7 +113,7 @@ CREATE TABLE `Ausleiher` (
   `Ort` VARCHAR(30) NOT NULL,
   `Telefonnummer` VARCHAR(30) NULL DEFAULT NULL,
   PRIMARY KEY (`AusleiherId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Schlagwort'
@@ -124,7 +124,7 @@ CREATE TABLE `Schlagwort` (
   `Wort` VARCHAR(20) NOT NULL,
   `Beschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Wort`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Sorte'
@@ -133,10 +133,10 @@ CREATE TABLE `Schlagwort` (
 		
 CREATE TABLE `Sorte` (
   `SorteId` INTEGER(11) NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(20) NULL DEFAULT NULL,
+  `Name` VARCHAR(20),
   `Beschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`SorteId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Verlag'
@@ -152,7 +152,7 @@ CREATE TABLE `Verlag` (
   `Internetadresse` VARCHAR(30) NULL DEFAULT NULL,
   `Beschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`VerlagId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Ebooks'
@@ -164,7 +164,7 @@ CREATE TABLE `Ebooks` (
   `BuchISBN` VARCHAR(13) NOT NULL,
   `Dateiformat` VARCHAR(10) NULL DEFAULT NULL,
   PRIMARY KEY (`ISBN`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Sprecher'
@@ -176,7 +176,7 @@ CREATE TABLE `Sprecher` (
   `PersonenId` INTEGER(11) NOT NULL,
   `Beschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`SprecherId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Video'
@@ -188,7 +188,7 @@ CREATE TABLE `Video` (
   `NichtTextMedienId` VARCHAR(13) NOT NULL,
   `Sprache` ENUM("deutsch","englisch","franzoesisch","spanisch","griechisch") NULL DEFAULT NULL,
   PRIMARY KEY (`VideoId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Hoerbuch'
@@ -201,7 +201,7 @@ CREATE TABLE `Hoerbuch` (
   `SprecherId` INTEGER(11) NOT NULL,
   `VerlagId` INTEGER(11) NULL DEFAULT NULL,
   PRIMARY KEY (`ISBN`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Bild'
@@ -214,7 +214,7 @@ CREATE TABLE `Bild` (
   `Bild` LONGBLOB NULL DEFAULT NULL,
   `MalerId` INTEGER(11) NOT NULL,
   PRIMARY KEY (`BildId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'MediumWortZuord'
@@ -224,7 +224,7 @@ CREATE TABLE `Bild` (
 CREATE TABLE `MediumWortZuord` (
   `MediumId` VARCHAR(13) NOT NULL,
   `Wort` VARCHAR(20) NOT NULL
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'Maler'
@@ -236,7 +236,7 @@ CREATE TABLE `Maler` (
   `PersonenId` INTEGER(11) NOT NULL,
   `Beschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`MalerId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Table 'NichtTextMedien'
@@ -252,7 +252,7 @@ CREATE TABLE `NichtTextMedien` (
   `SorteId` INTEGER(11) NULL DEFAULT NULL,
   `Typ` ENUM("Bild","Video") NOT NULL,
   PRIMARY KEY (`NichtTextMedienId`)
-);
+) CHARACTER SET=utf8mb4;
 
 -- ---
 -- Foreign Keys 
