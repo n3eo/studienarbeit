@@ -2,7 +2,7 @@
 <!-- SQL XML created by WWW SQL Designer, https://github.com/ondras/wwwsqldesigner/ -->
 <!-- Active URL: http://localhost:8000/ -->
 <sql>
-<datatypes db="mysql">
+    <datatypes db="mysql">
         <group label="Numeric" color="rgb(238,238,170)">
             <type label="Integer" length="0" sql="INTEGER" quote=""/>
             <type label="TINYINT" length="0" sql="TINYINT" quote=""/>
@@ -38,320 +38,353 @@
             <type label="SET" length="1" sql="SET" quote=""/>
             <type label="Bit" length="0" sql="bit" quote=""/>
         </group>
-    </datatypes><table x="1330" y="1706" name="Buch">
-<row name="ISBN" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-</row>
-<row name="Titel" null="0" autoincrement="0">
-<datatype>VARCHAR(50)</datatype>
-</row>
-<row name="Untertitel" null="1" autoincrement="0">
-<datatype>VARCHAR(100)</datatype>
-<default>NULL</default></row>
-<row name="VerlagId" null="1" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<default>NULL</default><relation table="Verlag" row="VerlagId" />
-</row>
-<row name="Erscheinungsjahr" null="1" autoincrement="0">
-<datatype>YEAR(4)</datatype>
-<default>NULL</default></row>
-<row name="SorteId" null="1" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<default>NULL</default><relation table="Sorte" row="SorteId" />
-</row>
-<row name="Kurzbeschreibung" null="1" autoincrement="0">
-<datatype>VARCHAR(100)</datatype>
-<default>NULL</default></row>
-<row name="Preis" null="1" autoincrement="0">
-<datatype>DECIMAL(10,3)</datatype>
-<default>NULL</default></row>
-<row name="Auflage" null="1" autoincrement="0">
-<datatype>VARCHAR(20)</datatype>
-<default>NULL</default></row>
-<row name="Sprache" null="1" autoincrement="0">
-<datatype>VARCHAR(20)</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>ISBN</part>
-</key>
-</table>
-<table x="2374" y="1543" name="Person">
-<row name="PersonenId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="Vorname" null="0" autoincrement="0">
-<datatype>VARCHAR(20)</datatype>
-</row>
-<row name="Name" null="0" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-</row>
-<row name="Email" null="1" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-<default>NULL</default></row>
-<row name="Geburtsdatum" null="1" autoincrement="0">
-<datatype>DATE</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>PersonenId</part>
-</key>
-</table>
-<table x="1952" y="1627" name="Ausleihe">
-<row name="TransaktionsId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="AusleiherId" null="0" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<relation table="Ausleiher" row="AusleiherId" />
-</row>
-<row name="MediumId" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-<relation table="Buch" row="ISBN" />
-</row>
-<row name="Ausleihdatum" null="0" autoincrement="0">
-<datatype>TIMESTAMP</datatype>
-<default>CURRENT_TIMESTAMP</default></row>
-<row name="Rückgabedatum" null="1" autoincrement="0">
-<datatype>TIMESTAMP</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>TransaktionsId</part>
-</key>
-</table>
-<table x="1541" y="1530" name="AutorBuchZuord">
-<row name="AutorId" null="0" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<relation table="Autor" row="AutorId" />
-</row>
-<row name="ISBN" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-<relation table="Buch" row="ISBN" />
-</row>
-</table>
-<table x="1831" y="1535" name="Autor">
-<row name="AutorId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="PersonenId" null="0" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<relation table="Person" row="PersonenId" />
-</row>
-<row name="Beschreibung" null="1" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>AutorId</part>
-</key>
-</table>
-<table x="2169" y="1527" name="Ausleiher">
-<row name="AusleiherId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="PersonenId" null="0" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<relation table="Person" row="PersonenId" />
-</row>
-<row name="Strasse" null="0" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-<default>'NULL'</default></row>
-<row name="Postleitzahl" null="0" autoincrement="0">
-<datatype>VARCHAR(5)</datatype>
-<default>'NULL'</default></row>
-<row name="Ort" null="0" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-</row>
-<row name="Telefonnummer" null="1" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>AusleiherId</part>
-</key>
-</table>
-<table x="2283" y="1926" name="Schlagwort">
-<row name="Wort" null="0" autoincrement="0">
-<datatype>VARCHAR(20)</datatype>
-</row>
-<row name="Beschreibung" null="1" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>Wort</part>
-</key>
-</table>
-<table x="1541" y="2067" name="Sorte">
-<row name="SorteId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="Name" null="0" autoincrement="0">
-<datatype>VARCHAR(20)</datatype>
-</row>
-<row name="Beschreibung" null="1" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>SorteId</part>
-</key>
-</table>
-<table x="1338" y="2020" name="Verlag">
-<row name="VerlagId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="Kurzname" null="1" autoincrement="0">
-<datatype>VARCHAR(20)</datatype>
-<default>NULL</default></row>
-<row name="Name" null="0" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-</row>
-<row name="Postleitzahl" null="1" autoincrement="0">
-<datatype>VARCHAR(5)</datatype>
-<default>NULL</default></row>
-<row name="Strasse" null="1" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-<default>NULL</default></row>
-<row name="Internetadresse" null="1" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-<default>NULL</default></row>
-<row name="Beschreibung" null="1" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>VerlagId</part>
-</key>
-</table>
-<table x="1344" y="1525" name="Ebooks">
-<row name="ISBN" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-</row>
-<row name="BuchISBN" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-<relation table="Buch" row="ISBN" />
-</row>
-<row name="Dateiformat" null="1" autoincrement="0">
-<datatype>VARCHAR(10)</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>ISBN</part>
-</key>
-</table>
-<table x="2165" y="1707" name="Sprecher">
-<row name="SprecherId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="PersonenId" null="0" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<relation table="Person" row="PersonenId" />
-</row>
-<row name="Beschreibung" null="1" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>SprecherId</part>
-</key>
-</table>
-<table x="1785" y="2092" name="Video">
-<row name="VideoId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="NichtTextMedienId" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-<relation table="NichtTextMedien" row="NichtTextMedienId" />
-</row>
-<row name="Sprache" null="1" autoincrement="0">
-<datatype>ENUM("deutsch","englisch","französisch","spanisch","griechisch")</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>VideoId</part>
-</key>
-</table>
-<table x="1538" y="1889" name="Hoerbuch">
-<row name="ISBN" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-</row>
-<row name="BuchISBN" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-<relation table="Buch" row="ISBN" />
-</row>
-<row name="SprecherId" null="0" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<relation table="Sprecher" row="SprecherId" />
-</row>
-<row name="VerlagId" null="1" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<default>NULL</default><relation table="Verlag" row="VerlagId" />
-</row>
-<key type="PRIMARY" name="">
-<part>ISBN</part>
-</key>
-</table>
-<table x="1999" y="2065" name="Bild">
-<row name="BildId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="NichtTextMedienId" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-<relation table="NichtTextMedien" row="NichtTextMedienId" />
-</row>
-<row name="Bild" null="1" autoincrement="0">
-<datatype>LONGBLOB</datatype>
-<default>NULL</default></row>
-<row name="MalerId" null="0" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<relation table="Maler" row="MalerId" />
-</row>
-<key type="PRIMARY" name="">
-<part>BildId</part>
-</key>
-</table>
-<table x="2051" y="1929" name="MediumWortZuord">
-<row name="MediumId" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-<relation table="Buch" row="ISBN" />
-</row>
-<row name="Wort" null="0" autoincrement="0">
-<datatype>VARCHAR(20)</datatype>
-<relation table="Schlagwort" row="Wort" />
-</row>
-</table>
-<table x="2173" y="1820" name="Maler">
-<row name="MalerId" null="0" autoincrement="1">
-<datatype>INTEGER(11)</datatype>
-</row>
-<row name="PersonenId" null="0" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<relation table="Person" row="PersonenId" />
-</row>
-<row name="Beschreibung" null="1" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>MalerId</part>
-</key>
-</table>
-<table x="1751" y="1790" name="NichtTextMedien">
-<row name="NichtTextMedienId" null="0" autoincrement="0">
-<datatype>VARCHAR(13)</datatype>
-</row>
-<row name="Titel" null="0" autoincrement="0">
-<datatype>VARCHAR(30)</datatype>
-</row>
-<row name="Untertitel" null="1" autoincrement="0">
-<datatype>VARCHAR(60)</datatype>
-<default>NULL</default></row>
-<row name="Erscheinungsjahr" null="1" autoincrement="0">
-<datatype>YEAR(4)</datatype>
-<default>NULL</default></row>
-<row name="Kurzbeschreibung" null="1" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>NULL</default></row>
-<row name="SorteId" null="1" autoincrement="0">
-<datatype>INTEGER(11)</datatype>
-<default>NULL</default><relation table="Sorte" row="SorteId" />
-</row>
-<row name="Typ" null="0" autoincrement="0">
-<datatype>ENUM("Bild","Video")</datatype>
-</row>
-<key type="PRIMARY" name="">
-<part>NichtTextMedienId</part>
-</key>
-</table>
+    </datatypes>
+    <table x="1330" y="1706" name="Buch">
+        <row name="ISBN" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+        </row>
+        <row name="Titel" null="0" autoincrement="0">
+            <datatype>VARCHAR(100)</datatype>
+        </row>
+        <row name="Untertitel" null="1" autoincrement="0">
+            <datatype>VARCHAR(100)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="VerlagId" null="1" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <default>NULL</default>
+            <relation table="Verlag" row="VerlagId" />
+        </row>
+        <row name="Erscheinungsjahr" null="1" autoincrement="0">
+            <datatype>YEAR(4)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="SorteId" null="1" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <default>NULL</default>
+            <relation table="Sorte" row="SorteId" />
+        </row>
+        <row name="Kurzbeschreibung" null="1" autoincrement="0">
+            <datatype>VARCHAR(100)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Preis" null="1" autoincrement="0">
+            <datatype>DECIMAL(10,3)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Auflage" null="1" autoincrement="0">
+            <datatype>VARCHAR(20)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Sprache" null="1" autoincrement="0">
+            <datatype>VARCHAR(20)</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>ISBN</part>
+        </key>
+    </table>
+    <table x="2374" y="1543" name="Person">
+        <row name="PersonenId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="Vorname" null="0" autoincrement="0">
+            <datatype>VARCHAR(20)</datatype>
+        </row>
+        <row name="Name" null="0" autoincrement="0">
+            <datatype>VARCHAR(30)</datatype>
+        </row>
+        <row name="Email" null="1" autoincrement="0">
+            <datatype>VARCHAR(30)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Geburtsdatum" null="1" autoincrement="0">
+            <datatype>DATE</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>PersonenId</part>
+        </key>
+    </table>
+    <table x="1952" y="1627" name="Ausleihe">
+        <row name="TransaktionsId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="AusleiherId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Ausleiher" row="AusleiherId" />
+        </row>
+        <row name="MediumId" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+            <relation table="Buch" row="ISBN" />
+        </row>
+        <row name="Ausleihdatum" null="0" autoincrement="0">
+            <datatype>TIMESTAMP</datatype>
+            <default>CURRENT_TIMESTAMP</default>
+        </row>
+        <row name="Rückgabedatum" null="1" autoincrement="0">
+            <datatype>TIMESTAMP</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>TransaktionsId</part>
+        </key>
+    </table>
+    <table x="1541" y="1530" name="AutorBuchZuord">
+        <row name="AutorId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Autor" row="AutorId" />
+        </row>
+        <row name="ISBN" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+            <relation table="Buch" row="ISBN" />
+        </row>
+    </table>
+    <table x="1831" y="1535" name="Autor">
+        <row name="AutorId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="PersonenId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Person" row="PersonenId" />
+        </row>
+        <row name="Beschreibung" null="1" autoincrement="0">
+            <datatype>MEDIUMTEXT</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>AutorId</part>
+        </key>
+    </table>
+    <table x="2169" y="1527" name="Ausleiher">
+        <row name="AusleiherId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="PersonenId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Person" row="PersonenId" />
+        </row>
+        <row name="Strasse" null="0" autoincrement="0">
+            <datatype>VARCHAR(30)</datatype>
+            <default>'NULL'</default>
+        </row>
+        <row name="Postleitzahl" null="0" autoincrement="0">
+            <datatype>VARCHAR(5)</datatype>
+            <default>'NULL'</default>
+        </row>
+        <row name="Ort" null="0" autoincrement="0">
+            <datatype>VARCHAR(30)</datatype>
+        </row>
+        <row name="Telefonnummer" null="1" autoincrement="0">
+            <datatype>VARCHAR(30)</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>AusleiherId</part>
+        </key>
+    </table>
+    <table x="2283" y="1926" name="Schlagwort">
+        <row name="Wort" null="0" autoincrement="0">
+            <datatype>VARCHAR(20)</datatype>
+        </row>
+        <row name="Beschreibung" null="1" autoincrement="0">
+            <datatype>MEDIUMTEXT</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>Wort</part>
+        </key>
+    </table>
+    <table x="1541" y="2067" name="Sorte">
+        <row name="SorteId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="Name" null="0" autoincrement="0">
+            <datatype>VARCHAR(50)</datatype>
+        </row>
+        <row name="Beschreibung" null="1" autoincrement="0">
+            <datatype>MEDIUMTEXT</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>SorteId</part>
+        </key>
+    </table>
+    <table x="1338" y="2020" name="Verlag">
+        <row name="VerlagId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="Kurzname" null="1" autoincrement="0">
+            <datatype>VARCHAR(20)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Name" null="0" autoincrement="0">
+            <datatype>VARCHAR(50)</datatype>
+        </row>
+        <row name="Postleitzahl" null="1" autoincrement="0">
+            <datatype>VARCHAR(5)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Strasse" null="1" autoincrement="0">
+            <datatype>VARCHAR(50)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Internetadresse" null="1" autoincrement="0">
+            <datatype>VARCHAR(30)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Beschreibung" null="1" autoincrement="0">
+            <datatype>MEDIUMTEXT</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>VerlagId</part>
+        </key>
+    </table>
+    <table x="1344" y="1525" name="Ebooks">
+        <row name="ISBN" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+        </row>
+        <row name="BuchISBN" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+            <relation table="Buch" row="ISBN" />
+        </row>
+        <row name="Dateiformat" null="1" autoincrement="0">
+            <datatype>VARCHAR(10)</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>ISBN</part>
+        </key>
+    </table>
+    <table x="2165" y="1707" name="Sprecher">
+        <row name="SprecherId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="PersonenId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Person" row="PersonenId" />
+        </row>
+        <row name="Beschreibung" null="1" autoincrement="0">
+            <datatype>MEDIUMTEXT</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>SprecherId</part>
+        </key>
+    </table>
+    <table x="1785" y="2092" name="Video">
+        <row name="VideoId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="NichtTextMedienId" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+            <relation table="NichtTextMedien" row="NichtTextMedienId" />
+        </row>
+        <row name="Sprache" null="1" autoincrement="0">
+            <datatype>VARCHAR(20)</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>VideoId</part>
+        </key>
+    </table>
+    <table x="1538" y="1889" name="Hoerbuch">
+        <row name="ISBN" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+        </row>
+        <row name="BuchISBN" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+            <relation table="Buch" row="ISBN" />
+        </row>
+        <row name="SprecherId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Sprecher" row="SprecherId" />
+        </row>
+        <row name="VerlagId" null="1" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <default>NULL</default>
+            <relation table="Verlag" row="VerlagId" />
+        </row>
+        <key type="PRIMARY" name="">
+            <part>ISBN</part>
+        </key>
+    </table>
+    <table x="1999" y="2065" name="Bild">
+        <row name="BildId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="NichtTextMedienId" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+            <relation table="NichtTextMedien" row="NichtTextMedienId" />
+        </row>
+        <row name="Bild" null="1" autoincrement="0">
+            <datatype>LONGBLOB</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="MalerId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Maler" row="MalerId" />
+        </row>
+        <key type="PRIMARY" name="">
+            <part>BildId</part>
+        </key>
+    </table>
+    <table x="2051" y="1929" name="MediumWortZuord">
+        <row name="MediumId" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+            <relation table="Buch" row="ISBN" />
+        </row>
+        <row name="Wort" null="0" autoincrement="0">
+            <datatype>VARCHAR(20)</datatype>
+            <relation table="Schlagwort" row="Wort" />
+        </row>
+    </table>
+    <table x="2173" y="1820" name="Maler">
+        <row name="MalerId" null="0" autoincrement="1">
+            <datatype>INTEGER(11)</datatype>
+        </row>
+        <row name="PersonenId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Person" row="PersonenId" />
+        </row>
+        <row name="Beschreibung" null="1" autoincrement="0">
+            <datatype>MEDIUMTEXT</datatype>
+            <default>NULL</default>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>MalerId</part>
+        </key>
+    </table>
+    <table x="1751" y="1790" name="NichtTextMedien">
+        <row name="NichtTextMedienId" null="0" autoincrement="0">
+            <datatype>VARCHAR(13)</datatype>
+        </row>
+        <row name="Titel" null="0" autoincrement="0">
+            <datatype>VARCHAR(100)</datatype>
+        </row>
+        <row name="Untertitel" null="1" autoincrement="0">
+            <datatype>VARCHAR(60)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Erscheinungsjahr" null="1" autoincrement="0">
+            <datatype>YEAR(4)</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="Kurzbeschreibung" null="1" autoincrement="0">
+            <datatype>MEDIUMTEXT</datatype>
+            <default>NULL</default>
+        </row>
+        <row name="SorteId" null="0" autoincrement="0">
+            <datatype>INTEGER(11)</datatype>
+            <relation table="Sorte" row="SorteId" />
+        </row>
+        <row name="Typ" null="0" autoincrement="0">
+            <datatype>ENUM("Bild","Video")</datatype>
+        </row>
+        <key type="PRIMARY" name="">
+            <part>NichtTextMedienId</part>
+        </key>
+    </table>
 </sql>
 

@@ -39,7 +39,7 @@ DROP TABLE IF EXISTS `Person`;
 		
 CREATE TABLE `Buch` (
   `ISBN` VARCHAR(13) NOT NULL,
-  `Titel` VARCHAR(50) NOT NULL,
+  `Titel` VARCHAR(100) NOT NULL,
   `Untertitel` VARCHAR(100) NULL DEFAULT NULL,
   `VerlagId` INTEGER(11) NULL DEFAULT NULL,
   `Erscheinungsjahr` YEAR(4) NULL DEFAULT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE `Autor` (
 CREATE TABLE `Ausleiher` (
   `AusleiherId` INTEGER(11) NOT NULL AUTO_INCREMENT,
   `PersonenId` INTEGER(11) NOT NULL,
-  `Strasse` VARCHAR(30) NOT NULL DEFAULT 'NULL',
+  `Strasse` VARCHAR(50) NOT NULL DEFAULT 'NULL',
   `Postleitzahl` VARCHAR(5) NOT NULL DEFAULT 'NULL',
   `Ort` VARCHAR(30) NOT NULL,
   `Telefonnummer` VARCHAR(30) NULL DEFAULT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE `Schlagwort` (
 		
 CREATE TABLE `Sorte` (
   `SorteId` INTEGER(11) NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(20),
+  `Name` VARCHAR(50) NOT NULL,
   `Beschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`SorteId`)
 ) CHARACTER SET=utf8mb4;
@@ -146,9 +146,9 @@ CREATE TABLE `Sorte` (
 CREATE TABLE `Verlag` (
   `VerlagId` INTEGER(11) NOT NULL AUTO_INCREMENT,
   `Kurzname` VARCHAR(20) NULL DEFAULT NULL,
-  `Name` VARCHAR(30) NOT NULL,
+  `Name` VARCHAR(50) NOT NULL,
   `Postleitzahl` VARCHAR(5) NULL DEFAULT NULL,
-  `Strasse` VARCHAR(30) NULL DEFAULT NULL,
+  `Strasse` VARCHAR(50) NULL DEFAULT NULL,
   `Internetadresse` VARCHAR(30) NULL DEFAULT NULL,
   `Beschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`VerlagId`)
@@ -186,7 +186,7 @@ CREATE TABLE `Sprecher` (
 CREATE TABLE `Video` (
   `VideoId` INTEGER(11) NOT NULL AUTO_INCREMENT,
   `NichtTextMedienId` VARCHAR(13) NOT NULL,
-  `Sprache` ENUM("deutsch","englisch","franzoesisch","spanisch","griechisch") NULL DEFAULT NULL,
+  `Sprache` VARCHAR(20) NULL DEFAULT NULL,
   PRIMARY KEY (`VideoId`)
 ) CHARACTER SET=utf8mb4;
 
@@ -245,11 +245,11 @@ CREATE TABLE `Maler` (
 		
 CREATE TABLE `NichtTextMedien` (
   `NichtTextMedienId` VARCHAR(13) NOT NULL,
-  `Titel` VARCHAR(30) NOT NULL,
+  `Titel` VARCHAR(100) NOT NULL,
   `Untertitel` VARCHAR(60) NULL DEFAULT NULL,
   `Erscheinungsjahr` YEAR(4) NULL DEFAULT NULL,
   `Kurzbeschreibung` MEDIUMTEXT NULL DEFAULT NULL,
-  `SorteId` INTEGER(11) NULL DEFAULT NULL,
+  `SorteId` INTEGER(11) NOT NULL,
   `Typ` ENUM("Bild","Video") NOT NULL,
   PRIMARY KEY (`NichtTextMedienId`)
 ) CHARACTER SET=utf8mb4;
