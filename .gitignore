@@ -5,3 +5,4 @@ wwwsqldesigner/
 .vscode
 .pyc
 __pycache__
+logs/
