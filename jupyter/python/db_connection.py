@@ -1,5 +1,6 @@
 import mysql.connector
 from datetime import date
+import logging
 
 class DbConnection():
     __instance = None
@@ -10,10 +11,10 @@ class DbConnection():
     SELECT_SORTE = "SELECT SorteId FROM Sorte WHERE Name=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
     INSERT_VERLAG = "INSERT INTO Verlag(Kurzname, Name, Postleitzahl, Strasse, Internetadresse, Beschreibung) VALUES(%s,%s,%s,%s,%s,%s)"
-    SELECT_VERLAG = "SELECT VerlagId FROM Verlag WHERE (Kurzname=%s OR Kurzname IS NULL) AND Name=%s AND Postleitzahl=%s AND Strasse=%s AND Internetadresse=%s AND Beschreibung=%s;"
+    SELECT_VERLAG = "SELECT VerlagId FROM Verlag WHERE (Kurzname=%s OR Kurzname IS NULL) AND Name=%s AND (Postleitzahl=%s OR Postleitzahl IS NULL) AND (Strasse=%s OR Strasse IS NULL) AND (Internetadresse=%s OR Internetadresse IS NULL) AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
     INSERT_BUCH = "INSERT IGNORE INTO Buch(ISBN,Titel,Untertitel,VerlagId,Erscheinungsjahr,SorteId,Kurzbeschreibung,Preis,Auflage,Sprache) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-
+    
     INSERT_AUTORBUCHZUORD = "INSERT IGNORE INTO AutorBuchZuord(AutorId,ISBN) VALUES(%s,%s);"
 
     INSERT_MEDIUMWORTZUORD = "INSERT IGNORE INTO MediumWortZuord(MediumId,Wort) VALUES(%s,%s)"
@@ -24,29 +25,29 @@ class DbConnection():
     SELECT_PERSON = "SELECT PersonenId FROM Person WHERE Vorname=%s AND Name=%s AND (Email=%s OR Email IS NULL) AND (Geburtsdatum=%s OR Geburtsdatum IS NULL);"
 
     INSERT_SPRECHER = "INSERT INTO Sprecher(PersonenId,Beschreibung) VALUES(%s,%s)"
-    SELECT_SPRECHER = "SELECT SprecherId FROM Sprecher WHERE PersonenId=%s AND Beschreibung=%s;"
+    SELECT_SPRECHER = "SELECT SprecherId FROM Sprecher WHERE PersonenId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
     INSERT_HOERBUCH = "INSERT IGNORE INTO Hoerbuch(ISBN,BuchISBN,SprecherId,VerlagId) VALUES(%s,%s,%s,%s);"
 
     INSERT_EBOOK = "INSERT IGNORE INTO Ebooks(ISBN,BuchISBN,Dateiformat) VALUES(%s,%s,%s)"
 
     INSERT_AUSLEIHER = "INSERT INTO Ausleiher(PersonenId,Strasse,Postleitzahl,Ort,Telefonnummer) VALUES(%s,%s,%s,%s,%s)"
-    SELECT_AUSLEIHER = "SELECT AusleiherId FROM Ausleiher WHERE PersonenId=%s AND Strasse=%s AND Postleitzahl=%s AND Ort=%s AND Telefonnummer=%s;"
+    SELECT_AUSLEIHER = "SELECT AusleiherId FROM Ausleiher WHERE PersonenId=%s AND Strasse=%s AND Postleitzahl=%s AND Ort=%s AND (Telefonnummer=%s OR Telefonnummer IS NULL);"
 
     INSERT_AUTOR = "INSERT INTO Autor(PersonenId,Beschreibung) VALUES(%s,%s)"
     SELECT_AUTOR = "SELECT AutorId FROM Autor WHERE PersonenId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
     INSERT_MALER = "INSERT INTO Maler(PersonenId,Beschreibung) VALUES(%s,%s)"
-    SELECT_MALER = "SELECT MalerId FROM Maler WHERE PersonenId=%s AND Beschreibung=%s;"
+    SELECT_MALER = "SELECT MalerId FROM Maler WHERE PersonenId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
     INSERT_NICHTTEXTMEDIEN = "INSERT INTO NichtTextMedien(NichtTextMedienId,Titel,Untertitel,Erscheinungsjahr,Kurzbeschreibung,SorteId,Typ) VALUES(%s,%s,%s,%s,%s,%s,%s)"
-    SELECT_NICHTTEXTMEDIEN = "SELECT NichttextmedienId FROM NichtTextMedien WHERE Titel=%s AND Untertitel=%s AND Erscheinungsjahr=%s AND Kurzbeschreibung=%s AND SorteId=%s AND Typ=%s;"
+    SELECT_NICHTTEXTMEDIEN = "SELECT NichttextmedienId FROM NichtTextMedien WHERE Titel=%s AND (Untertitel=%s OR Untertitel IS NULL) AND (Erscheinungsjahr=%s OR Erscheinungsjahr IS NULL) AND (Kurzbeschreibung=%s OR Kurzbeschreibung IS NULL) AND SorteId=%s AND Typ=%s;"
 
     INSERT_BILD = "INSERT INTO Bild(NichtTextMedienId,Bild,MalerId) VALUES(%s,%s,%s)"
-    SELECT_BILD = "SELECT BildId FROM Bild WHERE NichtTextMedienId=%s AND Bild=%s AND MalerId=%s;"
+    SELECT_BILD = "SELECT BildId FROM Bild WHERE NichtTextMedienId=%s AND (Bild=%s OR BILD IS NULL) AND MalerId=%s;"
 
     INSERT_VIDEO = "INSERT INTO Video(NichtTextMedienId,Sprache) VALUES(%s,%s)"
-    SELECT_VIDEO = "SELECT VideoId FROM Video WHERE NichtTextMedienId=%s AND Sprache=%s;"
+    SELECT_VIDEO = "SELECT VideoId FROM Video WHERE NichtTextMedienId=%s AND (Sprache=%s OR Sprache IS NULL);"
 
     INSERT_AUSLEIHE = "INSERT INTO Ausleihe(AusleiherId,MediumId) VALUES(%s,%s)"
 
@@ -65,7 +66,7 @@ class DbConnection():
         self.__cnx.close()
 
     def __insert_db(self, INSERT, values, SELECT=None):
-        val = tuple(values.values())
+        val = list(values.values())
 
         first_result = None
         if SELECT:
@@ -75,7 +76,7 @@ class DbConnection():
         if not first_result:
             self.__cursor.execute(INSERT, val)
             self.__cnx.commit()
-            if INSERT.find("IGNORE") >= 0:
+            if INSERT.find("IGNORE") == -1:
                 return self.__cursor.lastrowid
             else:
                 return val[0]
@@ -83,19 +84,18 @@ class DbConnection():
         return first_result[0]
 
     def __insert_db_ntm(self, INSERT, values, SELECT=None):
-        val = tuple(values.values())
+        val = list(values.values())
 
         first_result = None
         if SELECT:
             self.__cursor.execute(SELECT, val)
             first_result = self.__cursor.fetchone()
-                
-        if not first_result and SELECT:
+
+        if not first_result:
             val = ["nt" + str(hash(str(values)))[-11:]] + val
-            self.__cursor.execute(INSERT, val) 
+            self.__cursor.execute(INSERT, val)
             self.__cnx.commit()
-            return self.__cursor.lastrowid
-        elif not first_result and not SELECT:
+            
             return val[0]
 
         return first_result[0]
@@ -144,7 +144,7 @@ class DbConnection():
             # print("--- Done")
             
         except Exception as e:
-            # print(e)
+            print(e)
             return False
         
         return True
@@ -171,7 +171,7 @@ class DbConnection():
             self.__insert_db(self.INSERT_HOERBUCH, val_hoerbuch)
         
         except Exception as e:
-            # print(e)
+            logging.error(e)
             return False
         
         return True    
@@ -181,7 +181,7 @@ class DbConnection():
             # print("--- Inserting Ebook")
             self.__insert_db(self.INSERT_EBOOK, val_ebook)
         except Exception as e:
-            # print(e)
+            logging.error(e)
             return False
         
         return True
@@ -197,7 +197,7 @@ class DbConnection():
 
             # print("--- Done")
         except Exception as e:
-            # print(e)
+            logging.error(e)
             return False
         
         return True
@@ -226,7 +226,7 @@ class DbConnection():
 
             # print("--- Done")        
         except Exception as e:
-            # print(e)
+            logging.error(e)
             return False
         
         return True
@@ -247,7 +247,7 @@ class DbConnection():
 
             # print("--- Done")        
         except Exception as e:
-            # print(e)
+            logging.error(e)
             return False
         
         return True
