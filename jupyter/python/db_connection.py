@@ -2,6 +2,12 @@ import mysql.connector
 from datetime import date
 import logging
 
+# Configs for logger
+FORMAT = '%(asctime)-15s %(clientip)s %(user)-8s %(message)s'
+logging.basicConfig(filename="/jupyter/logs/db_connection.log",
+                    filemode='w',
+                    format=FORMAT)
+
 class DbConnection():
     __instance = None
     __cnx = None
@@ -144,7 +150,7 @@ class DbConnection():
             # print("--- Done")
             
         except Exception as e:
-            print(e)
+            logging.error(e)
             return False
         
         return True
