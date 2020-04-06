@@ -1,9 +1,29 @@
 import requests
 import json
-import traceback
-import itertools
+import logging
+import mysql.connector
+from faker import Faker
+from base64 import a85encode
 import re
 import random
+import time
+
+from db_connection import DbConnection as DBC
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()        
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts) * 1000)
+        else:
+            print('%r  %2.2f ms' % \
+                  (method.__name__, (te - ts) * 1000))
+        return result
+    
+    return timed
 
 def flattenObj(obj):
     dictVal = {}
@@ -56,6 +76,9 @@ def nestedDictGet(item, *keys):
     return nextBaseItem
 
 def extractListSubject(subjects):
+    if isinstance(subjects, str):
+        return subjects
+
     topics = []
     if isinstance(subjects, list):
         for item in subjects:
@@ -64,8 +87,8 @@ def extractListSubject(subjects):
     
     if isinstance(subjects, dict):
         for key, val in subjects.items():
-            if not key.find("@authority") >= 0:
-                topics.append(val)
+            if not key.find("@authority") >= 0 and not isinstance(val, dict):
+                topics += val if isinstance(val,list) and not isinstance(val, dict) else [val] # extractListSubject(val))
     
     # have every topic only one time by 
     # first cating to set and then back to list
@@ -79,6 +102,9 @@ def getInformationFromDifferentPaths(flattend, PATHS):
             information = val
             break
     return information
+
+def extractOneGenre(genre_flattend, GENRE_PATHS= ["0_#text", "#text"]):
+    return getInformationFromDifferentPaths(genre_flattend, GENRE_PATHS)
 
 def extractCreator(name_flattend, NAME_PATHS = ["0_namePart_0", "namePart_0", "0_namePart"]):
     return getInformationFromDifferentPaths(name_flattend, NAME_PATHS)
@@ -103,6 +129,9 @@ def extractEdition(edition_flattend, EDITION_PATHS = ["edition"]):
 def extractAbstract(abstract_flattend, ABSTRACT_PATHS = ["#text", "0"]):
     return getInformationFromDifferentPaths(abstract_flattend, ABSTRACT_PATHS)
 
+def extractURL(location_flattend, LOCATION_PATHS = ["0_url_1_#text"]):
+    return getInformationFromDifferentPaths(location_flattend, LOCATION_PATHS)
+
 def extractInformation(item):
     titleInfo_flattend = flattenObj(nestedDictGet(item, "titleInfo"))
     
@@ -120,10 +149,92 @@ def extractInformation(item):
     
     subjects = extractListSubject(nestedDictGet(item, "subject"))
     
-    return title, subtitle, publish_date, abstract, creator, subjects
+    fake = Faker()
+    Faker.seed(hash(str(title) + str(subjects)))
+
+    genre_flattend = flattenObj(nestedDictGet(item, "genre")) 
+    genre = extractOneGenre(genre_flattend) if genre_flattend != {} else fake.word()
+    
+    return title, subtitle, publish_date, abstract, creator, subjects, genre
+
+def extractPicture(item):
+    title, subtitle, publish_date, abstract, creator, subjects, genre = extractInformation(item)
+    
+    # only gets small preview
+    location_flattend = flattenObj(nestedDictGet(item, "location"))
+    url = extractURL(location_flattend)
+    image_a85 = a85encode(requests.get(url).content) if url else None
+
+    fake = Faker()
+    Faker.seed(hash(str(title) + str(subjects)))
+
+    val_sorte = {
+        "Name": genre,
+        "Beschreibung": fake.paragraph()
+    }
+
+    creator = creator if creator else fake.name()
+    val_person = {
+        "Vorname": creator.split(" ")[0],
+        "Name": creator.split(" ")[-1],
+        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1]}.{fake.tld()}",
+        "Geburtsdatum": fake.date_of_birth()
+    }
+
+    val_maler = {
+        "PersonenId": "",
+        "Beschreibung": fake.paragraph()
+    }
+
+    val_nichttextmedien = {
+        "Titel": title,
+        "Untertitel": subtitle,
+        "Erscheinungsjahr": publish_date,
+        "Kurzbeschreibung": abstract if abstract else fake.paragraph(),
+        "SorteId": "",
+        "Typ": ""
+    }
+
+    val_bild = {
+        "NichtTextMedienId": "",
+        "Bild": image_a85,
+        "MalerId": ""
+    }
+
+    return val_sorte, val_person, val_maler, val_nichttextmedien, val_bild
+
+def extractVideo(item):
+    title, subtitle, publish_date, abstract, _, subjects, genre = extractInformation(item)
+
+    language_flattend = flattenObj(nestedDictGet(item, "language"))
+    language = language_flattend.get("languageTerm_1_#text")
+
+    fake = Faker()
+    Faker.seed(hash(str(title) + str(subjects)))
+
+    val_sorte = {
+        "Name": genre,
+        "Beschreibung": fake.paragraph()
+    }
+
+    val_nichttextmedien = {
+        "Titel": title,
+        "Untertitel": subtitle,
+        "Erscheinungsjahr": publish_date,
+        "Kurzbeschreibung": abstract if abstract else fake.paragraph(),
+        "SorteId": "",
+        "Typ": ""
+    }
+
+    val_video = {
+        "NichtTextMedienId": "",
+        "Sprache": language
+    }
+
+    return val_sorte, val_nichttextmedien, val_video
 
 def extractBook(item):
-    title, subtitle, publish_date, abstract, creator, subjects = extractInformation(item)
+    title, subtitle, publish_date, abstract, creator, subjects, genre = extractInformation(item)
     
     language_flattend = flattenObj(nestedDictGet(item, "language"))
     language = language_flattend.get("languageTerm_1_#text")
@@ -136,47 +247,113 @@ def extractBook(item):
     # factor 100 to create cent values when dividing again
     random.seed(title)
     price = random.randint(100, 10000)/100
-    
-    return title, subtitle, publish_date, abstract, creator, subjects, language, edition, publisher, price
 
-r = requests.get("https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&sort=recordIdentifier")
-obj = json.loads(r.text)
+    fake = Faker()
+    Faker.seed(hash(str(title) + str(subjects)))
 
-# obj.get("pagination").get("numFound") exists always
-for start_value in range( obj.get("pagination").get("numFound") // 250 + 1):
-    print(f"{(start_value+1)*250}")
+    val_verlag = {
+        "Kurzname" : publisher,
+        "Name" : fake.company(),
+        "Postleitzahl" : fake.postalcode(),
+        "Strasse" : fake.street_address(),
+        "Internetadresse" : fake.domain_name(),
+        "Beschreibung" : fake.paragraph()
+    }
+
+    val_schlagwort = [
+        {   "Wort": word if word else fake.word(), "Beschreibung": fake.paragraph() } for word in subjects
+    ]
+
+    val_buch = {
+        "ISBN": fake.isbn13().replace("-",""),
+        "Titel": title,
+        "Untertitel": subtitle,
+        "VerlagId": "",
+        "Erscheinungsjahr": publish_date,
+        "SorteId": "",
+        "Kurzbeschreibung": abstract if abstract else fake.paragraph(),
+        "Preis": str(price),
+        "Auflage": edition,
+        "Sprache": language
+    }
+
+    creator = creator if creator else fake.name()
+    val_person = {
+        "Vorname": creator.split(" ")[0],
+        "Name": creator.split(" ")[-1],
+        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1]}.{fake.tld()}",
+        "Geburtsdatum": fake.date_of_birth()
+    }
+
+    val_autor = {
+        "PersonenId": "",
+        "Beschreibung": fake.paragraph()
+    }
+
+    val_sorte = {
+        "Name": genre,
+        "Beschreibung": fake.paragraph()
+    }
     
-    r = requests.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier")
+    return val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte
+
+def setup():
+    logging.basicConfig(filename="../jupyter/logs/api_requests.log",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.INFO)
+
+    dbc = DBC()
+
+    start = 0 # 0
+    rtyp = "text" # "still%20image" "moving%20image"
+    default_sleep_time = 2
+
+    r = requests.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&sort=recordIdentifier&resourceType={rtyp}")
     obj = json.loads(r.text)
+
+    total = obj.get("pagination").get("numFound")
+
+    return dbc, start, rtyp, default_sleep_time, total
+
+def main(dbc, start, rtyp, default_sleep_time, total):
+    for start_value in range( start, total // 250 + 1):
+        t_start = time.time()
+        success = False
+        while not success:
+            try:
+                r = requests.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier&resourceType={rtyp}")
+                success = True
+            except Exception as e: # requests.exceptions.ConnectionError as e:
+                logging.warning(e)
+                time.sleep(default_sleep_time)
+                default_sleep_time *= 1.5
+
+        obj = json.loads(r.text)
+
+        print("Processing items...")
+        for item in obj["items"]["mods"]:
+            try:
+                if item["typeOfResource"] == "text":
+                    val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte = extractBook(item)
+                    dbc.insert_book(val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte)
+                elif item["typeOfResource"] == "moving image":
+                    val_sorte, val_nichttextmedien, val_video = extractVideo(item)
+                    dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
+                else:
+                    val_sorte, val_person, val_maler, val_nichttextmedien, val_bild = extractPicture(item)
+                    dbc.insert_bild(val_sorte, val_person, val_maler, val_nichttextmedien, val_bild)
+            except Exception as e:
+                logging.error(e)
+        logging.info(f"{(start_value+1)*250} of {total} ({(((start_value+1)*250)/total)*100} %)")
+        logging.info(f"Took: {time.time()-t_start}")
+        print(f"Took: {time.time()-t_start}")
     
-    for num, item in enumerate(obj["items"]["mods"]):
-        try:
-            extractInformation(item)
-            # TODO Do something
-        except Exception as e:
-            print(f"\nError in Round {start_value} Entry {num}:\n\n")
-            print(traceback.print_exc())
-            print("\n\n")
-            print(item)
-            test_break = True
-            break
-    if test_break: break
+if __name__ == "__main__":
+    dbc, start, rtyp, default_sleep_time, total = setup()
+    main(dbc, start, rtyp, default_sleep_time, total)
 
 
-# # Test single entrys
 
-# In[37]:
-
-
-start_value = 37
-entry = 200
-
-r = requests.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier")
-item = json.loads(r.text)["items"]["mods"][entry]
-
-
-# In[46]:
-
-
-extractInformation(item)
 
