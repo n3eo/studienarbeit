@@ -1,4 +1,4 @@
-import requests
+import httpx, requests
 import json
 import logging
 import mysql.connector
@@ -19,7 +19,7 @@ def timeit(method):
             name = kw.get('log_name', method.__name__.upper())
             kw['log_time'][name] = int((te - ts) * 1000)
         else:
-            print('%r  %2.2f ms' % \
+            logging.info('%r  %2.2f ms' % \
                   (method.__name__, (te - ts) * 1000))
         return result
     
@@ -163,13 +163,17 @@ def extractPicture(item):
     # only gets small preview
     location_flattend = flattenObj(nestedDictGet(item, "location"))
     url = extractURL(location_flattend)
-    image_a85 = a85encode(requests.get(url).content) if url else None
+    if url:
+        r = requests.get(url)
+        image_a85 = a85encode(r.content)
+    else:
+        image_a85 = None
 
     fake = Faker()
     Faker.seed(hash(str(title) + str(subjects)))
 
     val_sorte = {
-        "Name": genre,
+        "Name": genre if genre else fake.word(),
         "Beschreibung": fake.paragraph()
     }
 
@@ -213,7 +217,7 @@ def extractVideo(item):
     Faker.seed(hash(str(title) + str(subjects)))
 
     val_sorte = {
-        "Name": genre,
+        "Name": genre if genre else fake.word(),
         "Beschreibung": fake.paragraph()
     }
 
@@ -291,7 +295,7 @@ def extractBook(item):
     }
 
     val_sorte = {
-        "Name": genre,
+        "Name": genre if genre else fake.word(),
         "Beschreibung": fake.paragraph()
     }
     
@@ -317,38 +321,69 @@ def setup():
 
     return dbc, start, rtyp, default_sleep_time, total
 
-def main(dbc, start, rtyp, default_sleep_time, total):
+async def submain(start_value,rtyp,dbc,total):
+    t_start = time.time()
+    async with httpx.AsyncClient() as client:
+        r = await client.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier&resourceType={rtyp}")
+
+    obj = json.loads(r.text)
+
+    print("Processing items...")
+    for item in obj["items"]["mods"]:
+        try:
+            if item["typeOfResource"] == "text":
+                val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte = await extractBook(item)
+                dbc.insert_book(val_schlagwort, val_verlag,
+                                val_buch, val_person, val_autor, val_sorte)
+            elif item["typeOfResource"] == "moving image":
+                val_sorte, val_nichttextmedien, val_video = await extractVideo(item)
+                dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
+            else:
+                val_sorte, val_person, val_maler, val_nichttextmedien, val_bild = await extractPicture(item)
+                dbc.insert_bild(val_sorte, val_person,
+                                val_maler, val_nichttextmedien, val_bild)
+        except Exception as e:
+            logging.error(e, exc_info=True)
+    logging.info(
+        f"{(start_value+1)*250} of {total} ({(((start_value+1)*250)/total)*100} %)")
+    logging.info(f"Took: {time.time()-t_start}")
+
+@timeit
+def concurrent_submain(start_value):
+    dbc = DBC()    
+    logging.info(f"Starting with {start_value}.")
+    dbc.set_prossesing(start_value)
+    try:
+        r = requests.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier")
+    except Exception as e:
+        dbc.set_pending(start_value)
+        logging.error(e, exc_info=True)
+        return
+    obj = json.loads(r.text)
+    
+    for num, item in enumerate(obj["items"]["mods"]):
+        try:
+            if item["typeOfResource"] == "text":
+                val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte = extractBook(item)
+                dbc.insert_book(val_schlagwort, val_verlag,
+                                val_buch, val_person, val_autor, val_sorte)
+            elif item["typeOfResource"] == "moving image":
+                val_sorte, val_nichttextmedien, val_video = extractVideo(item)
+                dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
+            else:
+                val_sorte, val_person, val_maler, val_nichttextmedien, val_bild = extractPicture(item)
+                dbc.insert_bild(val_sorte, val_person,
+                                val_maler, val_nichttextmedien, val_bild)
+        except Exception as e:
+            logging.error(e, exc_info=True)
+    logging.info(f"Done with {start_value}.")
+    dbc.set_done(start_value)
+    dbc.close()
+    
+
+async def main(dbc, start, rtyp, default_sleep_time, total):
     for start_value in range( start, total // 250 + 1):
-        t_start = time.time()
-        success = False
-        while not success:
-            try:
-                r = requests.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier&resourceType={rtyp}")
-                success = True
-            except Exception as e: # requests.exceptions.ConnectionError as e:
-                logging.warning(e)
-                time.sleep(default_sleep_time)
-                default_sleep_time *= 1.5
-
-        obj = json.loads(r.text)
-
-        print("Processing items...")
-        for item in obj["items"]["mods"]:
-            try:
-                if item["typeOfResource"] == "text":
-                    val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte = extractBook(item)
-                    dbc.insert_book(val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte)
-                elif item["typeOfResource"] == "moving image":
-                    val_sorte, val_nichttextmedien, val_video = extractVideo(item)
-                    dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
-                else:
-                    val_sorte, val_person, val_maler, val_nichttextmedien, val_bild = extractPicture(item)
-                    dbc.insert_bild(val_sorte, val_person, val_maler, val_nichttextmedien, val_bild)
-            except Exception as e:
-                logging.error(e)
-        logging.info(f"{(start_value+1)*250} of {total} ({(((start_value+1)*250)/total)*100} %)")
-        logging.info(f"Took: {time.time()-t_start}")
-        print(f"Took: {time.time()-t_start}")
+        await submain(start_value,rtyp,dbc,total)
     
 if __name__ == "__main__":
     dbc, start, rtyp, default_sleep_time, total = setup()
