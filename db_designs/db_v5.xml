@@ -44,7 +44,7 @@
             <datatype>VARCHAR(13)</datatype>
         </row>
         <row name="Titel" null="0" autoincrement="0">
-            <datatype>VARCHAR(100)</datatype>
+            <datatype>TEXT</datatype>
         </row>
         <row name="Untertitel" null="1" autoincrement="0">
             <datatype>VARCHAR(100)</datatype>
@@ -56,7 +56,7 @@
             <relation table="Verlag" row="VerlagId" />
         </row>
         <row name="Erscheinungsjahr" null="1" autoincrement="0">
-            <datatype>YEAR(4)</datatype>
+            <datatype>SMALLINT(4)</datatype>
             <default>NULL</default>
         </row>
         <row name="SorteId" null="1" autoincrement="0">
@@ -361,14 +361,14 @@
             <datatype>VARCHAR(13)</datatype>
         </row>
         <row name="Titel" null="0" autoincrement="0">
-            <datatype>VARCHAR(100)</datatype>
+            <datatype>TEXT</datatype>
         </row>
         <row name="Untertitel" null="1" autoincrement="0">
             <datatype>VARCHAR(60)</datatype>
             <default>NULL</default>
         </row>
         <row name="Erscheinungsjahr" null="1" autoincrement="0">
-            <datatype>YEAR(4)</datatype>
+            <datatype>SMALLINT(4)</datatype>
             <default>NULL</default>
         </row>
         <row name="Kurzbeschreibung" null="1" autoincrement="0">

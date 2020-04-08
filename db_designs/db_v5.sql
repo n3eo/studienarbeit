@@ -39,10 +39,10 @@ DROP TABLE IF EXISTS `Person`;
 		
 CREATE TABLE `Buch` (
   `ISBN` VARCHAR(13) NOT NULL,
-  `Titel` VARCHAR(100) NOT NULL,
+  `Titel` TEXT NOT NULL,
   `Untertitel` VARCHAR(100) NULL DEFAULT NULL,
   `VerlagId` INTEGER(11) NULL DEFAULT NULL,
-  `Erscheinungsjahr` YEAR(4) NULL DEFAULT NULL,
+  `Erscheinungsjahr` SMALLINT(4) NULL DEFAULT NULL,
   `SorteId` INTEGER(11) NULL DEFAULT NULL,
   `Kurzbeschreibung` VARCHAR(100) NULL DEFAULT NULL,
   `Preis` DECIMAL(10,3) NULL DEFAULT NULL,
@@ -245,9 +245,9 @@ CREATE TABLE `Maler` (
 		
 CREATE TABLE `NichtTextMedien` (
   `NichtTextMedienId` VARCHAR(13) NOT NULL,
-  `Titel` VARCHAR(100) NOT NULL,
+  `Titel` TEXT NOT NULL,
   `Untertitel` VARCHAR(60) NULL DEFAULT NULL,
-  `Erscheinungsjahr` YEAR(4) NULL DEFAULT NULL,
+  `Erscheinungsjahr` SMALLINT(4) NULL DEFAULT NULL,
   `Kurzbeschreibung` MEDIUMTEXT NULL DEFAULT NULL,
   `SorteId` INTEGER(11) NOT NULL,
   `Typ` ENUM("Bild","Video") NOT NULL,
