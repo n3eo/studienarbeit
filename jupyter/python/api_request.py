@@ -7,6 +7,7 @@ from base64 import a85encode
 import re
 import random
 import time
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from db_connection import DbConnection as DBC
 
@@ -301,6 +302,72 @@ def extractBook(item):
     
     return val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte
 
+def gen_ebook(buch_isbn):
+    fake = Faker()
+    Faker.seed(buch_isbn)
+
+    return {
+        "ISBN": fake.isbn13().replace("-",""),
+        "BuchISBN": buch_isbn,
+        "Dateiformat": fake.file_extension(category="text")
+    }
+
+def gen_audiobook(buch_isbn):
+    fake = Faker()
+    Faker.seed(buch_isbn)
+
+    val_verlag = {
+        "Kurzname" : None,
+        "Name" : fake.company(),
+        "Postleitzahl" : fake.postalcode(),
+        "Strasse" : fake.street_address(),
+        "Internetadresse" : fake.domain_name(),
+        "Beschreibung" : fake.paragraph()
+    }
+
+    creator = fake.name()
+    val_person = {
+        "Vorname": creator.split(" ")[0],
+        "Name": creator.split(" ")[-1],
+        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1]}.{fake.tld()}",
+        "Geburtsdatum": fake.date_of_birth()
+    }
+
+    val_sprecher = {
+        "PersonenId": "",
+        "Beschreibung": fake.paragraph()
+    }
+
+    val_hoerbuch = {
+        "ISBN": fake.isbn13().replace("-",""),
+        "BuchISBN": buch_isbn,
+        "SprecherId": "",
+        "VerlagId": ""
+    }
+
+    return val_person, val_sprecher, val_verlag, val_hoerbuch
+
+def gen_ausleihe():
+    fake = Faker()
+
+    creator = fake.name()
+    val_person = {
+        "Vorname": creator.split(" ")[0],
+        "Name": creator.split(" ")[-1],
+        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1]}.{fake.tld()}",
+        "Geburtsdatum": fake.date_of_birth()
+    }
+
+    val_ausleiher = {
+        "PersonenId": "",
+        "Strasse": fake.street_address(),
+        "Postleitzahl": fake.postalcode(),
+        "Ort": fake.city(),
+        "Telefonnummer" : fake.phone_number()
+    }
+
+    return val_person, val_ausleiher
+
 def setup():
     logging.basicConfig(filename="../jupyter/logs/api_requests.log",
                     filemode='a',
@@ -348,25 +415,34 @@ async def submain(start_value,rtyp,dbc,total):
         f"{(start_value+1)*250} of {total} ({(((start_value+1)*250)/total)*100} %)")
     logging.info(f"Took: {time.time()-t_start}")
 
-@timeit
-def concurrent_submain(start_value):
-    dbc = DBC()    
-    logging.info(f"Starting with {start_value}.")
-    dbc.set_prossesing(start_value)
-    try:
-        r = requests.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier")
-    except Exception as e:
-        dbc.set_pending(start_value)
-        logging.error(e, exc_info=True)
-        return
-    obj = json.loads(r.text)
+def concurrent_submain(id):
+    t_start = time.time()
+    dbc = DBC()
+    logging.info(f"Loading: {id}")
     
-    for num, item in enumerate(obj["items"]["mods"]):
+    
+    j = dbc.get_json(id)
+    obj = json.loads(j)
+    logging.info(f"Loaded: {id}")
+
+    for item in obj["items"]["mods"]:
         try:
             if item["typeOfResource"] == "text":
                 val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte = extractBook(item)
                 dbc.insert_book(val_schlagwort, val_verlag,
                                 val_buch, val_person, val_autor, val_sorte)
+                # Random insert of ebook
+                if random.random() < 0.4:
+                    val_ebook = gen_ebook(val_buch["ISBN"])
+                    dbc.insert_ebook(val_ebook)
+                # Random insert of audio book
+                if random.random() < 0.1:
+                    val_person, val_sprecher, val_verlag, val_hoerbuch = gen_audiobook(val_buch["ISBN"])
+                    dbc.insert_hoerbuch(val_person, val_sprecher, val_verlag, val_hoerbuch)
+                # Random insert of borrowed book
+                if random.random() < 0.05:
+                    val_person, val_ausleiher = gen_ausleihe()
+                    dbc.insert_ausleihe(val_person, val_ausleiher, val_buch["ISBN"])
             elif item["typeOfResource"] == "moving image":
                 val_sorte, val_nichttextmedien, val_video = extractVideo(item)
                 dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
@@ -376,8 +452,8 @@ def concurrent_submain(start_value):
                                 val_maler, val_nichttextmedien, val_bild)
         except Exception as e:
             logging.error(e, exc_info=True)
-    logging.info(f"Done with {start_value}.")
-    dbc.set_done(start_value)
+    logging.info(f"Processed: {id} in {round(time.time()-t_start,2)}s")
+    dbc.del_id(id)
     dbc.close()
     
 
@@ -386,9 +462,22 @@ async def main(dbc, start, rtyp, default_sleep_time, total):
         await submain(start_value,rtyp,dbc,total)
     
 if __name__ == "__main__":
-    dbc, start, rtyp, default_sleep_time, total = setup()
-    main(dbc, start, rtyp, default_sleep_time, total)
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
+        level=logging.INFO,
+        datefmt="%H:%M:%S",
+        filename="../jupyter/logs/concurrent_db_ingestions.log",
+        filemode='a',
+    )
 
+    workers = 2
+    dbc = DBC()
+    results = list(range(4,6)) # dbc.get_jsons()
+    dbc.close()
+
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        for _ in executor.map(concurrent_submain, results):
+            pass
 
 
 

@@ -106,9 +106,27 @@ class DbConnection():
         results = self.__cursor.fetchall()
         return [i[0] for i in results]
     
+    def get_jsons(self):
+        self.__cursor.execute(
+            'SELECT ID FROM api_request WHERE Status="JSON" AND JSON IS NOT NULL;')  # OR JSON IS NULL
+        results = self.__cursor.fetchall()
+        return [i[0] for i in results]
+
+    def get_json(self, id):
+        self.__cursor.execute(
+            f'SELECT JSON FROM api_request WHERE ID={id};')  # OR JSON IS NULL
+        i = self.__cursor.fetchone()
+        return i[0]
+
+
     def insert_json(self, id, json):
         self.__cursor.execute(
             "UPDATE api_request SET JSON=%s WHERE ID=%s", (json, id))
+        self.__cnx.commit()
+
+    def del_id(self, id):
+        self.__cursor.execute(
+            f"DELETE FROM api_request WHERE ID={id};")
         self.__cnx.commit()
     
     def __insert_db(self, INSERT, values, SELECT=None):
@@ -146,7 +164,6 @@ class DbConnection():
 
         return first_result[0]
 
-    
     def insert_book(self, val_schlagworte, val_verlag, val_buch, val_person, val_autor, val_sorte):
         try:
             # print("--- Inserting Sorte")
