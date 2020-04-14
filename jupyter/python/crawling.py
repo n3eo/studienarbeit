@@ -45,26 +45,27 @@ def insert_json(cnx, cursor, id, json):
 
 def crawlJSON(start_value):
     time.sleep(random.random()*((start_value % workers / workers) * 5))
+    t_start = time.time()
 
+    logging.info(f"Crawling {start_value}.")
+    # set_prossesing(cnx, cursor, start_value)
+    try:
+        r = requests.get(
+            f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier", timeout=workers)
+    except Exception as e:
+        logging.error(e, exc_info=False)
+        return
     cnx = mysql.connector.connect(
         host='db', port='3306', database='nico_studienarbeit', user='studienarbeit', password='dbstuar2020')
 
     cursor = cnx.cursor(buffered=True)
 
-
-    logging.info(f"Crawling {start_value}.")
-    set_prossesing(cnx, cursor, start_value)
-    try:
-        r = requests.get(
-            f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier", timeout=workers)
-    except Exception as e:
-        set_pending(cnx, cursor, start_value)
-        logging.error(e, exc_info=False)
-    else:
-        insert_json(cnx, cursor, start_value, r.content)
-        set_json(cnx, cursor, start_value)
-    finally:
-        cnx.close()
+    insert_json(cnx, cursor, start_value, r.content)
+    set_json(cnx, cursor, start_value)
+    
+    cnx.close()
+    
+    logging.info(f"Crawling {start_value} took {time.time()-t_start}s")
 
 with ProcessPoolExecutor(max_workers=workers) as executor:
     for _ in executor.map(crawlJSON, results):
