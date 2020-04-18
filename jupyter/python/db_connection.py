@@ -156,7 +156,7 @@ class DbConnection():
             first_result = self.__cursor.fetchone()
 
         if not first_result:
-            val = ["n" + str(hash(str(values)))[-12:]] + val
+            val = ["n" + str(hash(str(values)))[-16:]] + val
             self.__cursor.execute(INSERT, val)
             self.__cnx.commit()
             

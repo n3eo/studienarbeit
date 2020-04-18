@@ -274,7 +274,7 @@ def extractBook(item):
     ]
 
     val_buch = {
-        "ISBN": fake.isbn13().replace("-",""),
+        "ISBN": fake.isbn13(),
         "Titel": title,
         "Untertitel": subtitle,
         "VerlagId": "",
@@ -311,7 +311,7 @@ def gen_ebook(buch_isbn):
     Faker.seed(buch_isbn)
 
     return {
-        "ISBN": fake.isbn13().replace("-",""),
+        "ISBN": fake.isbn13(),
         "BuchISBN": buch_isbn,
         "Dateiformat": fake.file_extension(category="text")
     }
@@ -343,7 +343,7 @@ def gen_audiobook(buch_isbn):
     }
 
     val_hoerbuch = {
-        "ISBN": fake.isbn13().replace("-",""),
+        "ISBN": fake.isbn13(),
         "BuchISBN": buch_isbn,
         "SprecherId": "",
         "VerlagId": ""
