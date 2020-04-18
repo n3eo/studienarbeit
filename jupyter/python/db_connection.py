@@ -108,7 +108,7 @@ class DbConnection():
     
     def get_jsons(self):
         self.__cursor.execute(
-            'SELECT ID FROM api_request WHERE Status="JSON" AND JSON IS NOT NULL;')  # OR JSON IS NULL
+            'SELECT ID FROM api_request WHERE Status="JSON";')  # OR JSON IS NULL
         results = self.__cursor.fetchall()
         return [i[0] for i in results]
 
@@ -156,7 +156,7 @@ class DbConnection():
             first_result = self.__cursor.fetchone()
 
         if not first_result:
-            val = ["nt" + str(hash(str(values)))[-11:]] + val
+            val = ["n" + str(hash(str(values)))[-12:]] + val
             self.__cursor.execute(INSERT, val)
             self.__cnx.commit()
             
