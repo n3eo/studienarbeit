@@ -2,9 +2,8 @@
     "name": "jupyter",
     "dockerComposeFile": "../docker-compose.yml",
     "service": "jupyter",
-    "workspaceFolder": "/jupyter",
+    "workspaceFolder": "/app",
     "extensions": [
         "ms-python.python",
-	
     ]
 }
