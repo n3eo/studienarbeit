@@ -158,6 +158,7 @@ def extractInformation(item):
     
     return title, subtitle, publish_date, abstract, creator, subjects, genre
 
+# @timeit
 def extractPicture(item):
     title, subtitle, publish_date, abstract, creator, subjects, genre = extractInformation(item)
     
@@ -212,6 +213,7 @@ def extractPicture(item):
 
     return val_sorte, val_person, val_maler, val_nichttextmedien, val_bild
 
+# @timeit
 def extractVideo(item):
     title, subtitle, publish_date, abstract, _, subjects, genre = extractInformation(item)
 
@@ -242,6 +244,7 @@ def extractVideo(item):
 
     return val_sorte, val_nichttextmedien, val_video
 
+# @timeit
 def extractBook(item):
     title, subtitle, publish_date, abstract, creator, subjects, genre = extractInformation(item)
     
@@ -306,6 +309,7 @@ def extractBook(item):
     
     return val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte
 
+# @timeit
 def gen_ebook(buch_isbn):
     fake = Faker()
     Faker.seed(buch_isbn)
@@ -316,6 +320,7 @@ def gen_ebook(buch_isbn):
         "Dateiformat": fake.file_extension(category="text")
     }
 
+# @timeit
 def gen_audiobook(buch_isbn):
     fake = Faker()
     Faker.seed(buch_isbn)
@@ -351,6 +356,7 @@ def gen_audiobook(buch_isbn):
 
     return val_person, val_sprecher, val_verlag, val_hoerbuch
 
+# @timeit
 def gen_ausleihe():
     fake = Faker()
 
@@ -419,6 +425,7 @@ async def submain(start_value,rtyp,dbc,total):
         f"{(start_value+1)*250} of {total} ({(((start_value+1)*250)/total)*100} %)")
     logging.info(f"Took: {time.time()-t_start}")
 
+# @timeit
 def concurrent_submain(id):
     t_start = time.time()
     dbc = DBC()
@@ -450,7 +457,7 @@ def concurrent_submain(id):
             elif item["typeOfResource"] == "moving image":
                 val_sorte, val_nichttextmedien, val_video = extractVideo(item)
                 dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
-            else:
+            elif item["typeOfResource"] == "still image":
                 val_sorte, val_person, val_maler, val_nichttextmedien, val_bild = extractPicture(item)
                 dbc.insert_bild(val_sorte, val_person,
                                 val_maler, val_nichttextmedien, val_bild)
