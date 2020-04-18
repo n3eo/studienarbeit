@@ -9,6 +9,7 @@ services:
     image: mysql:5.7
     volumes:
       - db_data:/var/lib/mysql
+      - ./db_designs/my.cnf:/etc/mysql/my.cnf
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -36,7 +37,7 @@ services:
       - db
     image: jupyter/minimal-notebook
     volumes:
-      - ./jupyter:/jupyter
+      - .:/app
     working_dir: /jupyter
     restart: always
     ports:
