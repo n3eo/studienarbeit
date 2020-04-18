@@ -165,8 +165,12 @@ def extractPicture(item):
     location_flattend = flattenObj(nestedDictGet(item, "location"))
     url = extractURL(location_flattend)
     if url:
-        r = requests.get(url)
-        image_a85 = a85encode(r.content)
+        try:
+            r = requests.get(url)
+            image_a85 = a85encode(r.content)
+        except Exception as e:
+            logging.error(e)
+            image_a85 = None
     else:
         image_a85 = None
 
@@ -470,9 +474,9 @@ if __name__ == "__main__":
         filemode='a',
     )
 
-    workers = 2
+    workers = 128
     dbc = DBC()
-    results = list(range(4,6)) # dbc.get_jsons()
+    results = dbc.get_jsons()
     dbc.close()
 
     with ProcessPoolExecutor(max_workers=workers) as executor:
