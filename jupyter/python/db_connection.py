@@ -12,7 +12,7 @@ def timeit(method):
             name = kw.get('log_name', method.__name__.upper())
             kw['log_time'][name] = int((te - ts) * 1000)
         else:
-            print('%r  %2.2f ms' % \
+            logging.info('%r  %2.2f ms' % \
                 (method.__name__, (te - ts) * 1000))
         return result
     
@@ -129,6 +129,7 @@ class DbConnection():
             f"DELETE FROM api_request WHERE ID={id};")
         self.__cnx.commit()
     
+    # @timeit
     def __insert_db(self, INSERT, values, SELECT=None):
         val = list(values.values())
 
@@ -147,6 +148,7 @@ class DbConnection():
 
         return first_result[0]
 
+    # @timeit
     def __insert_db_ntm(self, INSERT, values, SELECT=None):
         val = list(values.values())
 
@@ -164,6 +166,7 @@ class DbConnection():
 
         return first_result[0]
 
+    # @timeit
     def insert_book(self, val_schlagworte, val_verlag, val_buch, val_person, val_autor, val_sorte):
         try:
             # print("--- Inserting Sorte")
@@ -214,6 +217,7 @@ class DbConnection():
     # ### Hörbuch
     # self.INSERT_SORTE, self.INSERT_VERLAG, self.INSERT_BUCH, self.INSERT_SPRECHER
 
+    # @timeit
     def insert_hoerbuch(self, val_person, val_sprecher, val_verlag, val_hoerbuch):
         try:
             # print("--- Inserting Person")
@@ -237,6 +241,7 @@ class DbConnection():
         
         return True    
 
+    # @timeit
     def insert_ebook(self, val_ebook):
         try:
             # print("--- Inserting Ebook")
@@ -263,6 +268,7 @@ class DbConnection():
         
         return True
 
+    # @timeit
     def insert_bild(self, val_sorte, val_person, val_maler, val_nichttextmedien, val_bild):
         try:
             # print("--- Inserting Sorte")
@@ -291,7 +297,8 @@ class DbConnection():
             return False
         
         return True
-    
+
+    # @timeit
     def insert_video(self, val_sorte, val_nichttextmedien, val_video):
         try:
             # print("--- Inserting Sorte")
@@ -313,7 +320,7 @@ class DbConnection():
         
         return True
 
-
+    # @timeit
     def insert_ausleihe(self, val_person, val_ausleiher, ISBN):
         try:
             # print("--- Inserting Person")
