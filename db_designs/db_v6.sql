@@ -269,11 +269,13 @@ ALTER TABLE `Ausleiher` ADD FOREIGN KEY (PersonenId) REFERENCES `Person` (`Perso
 ALTER TABLE `Ebooks` ADD FOREIGN KEY (BuchISBN) REFERENCES `Buch` (`ISBN`);
 ALTER TABLE `Sprecher` ADD FOREIGN KEY (PersonenId) REFERENCES `Person` (`PersonenId`);
 ALTER TABLE `Video` ADD FOREIGN KEY (NichtTextMedienId) REFERENCES `NichtTextMedien` (`NichtTextMedienId`);
+ALTER TABLE `Video` ADD UNIQUE( `NichtTextMedienId`); 
 ALTER TABLE `Hoerbuch` ADD FOREIGN KEY (BuchISBN) REFERENCES `Buch` (`ISBN`);
 ALTER TABLE `Hoerbuch` ADD FOREIGN KEY (SprecherId) REFERENCES `Sprecher` (`SprecherId`);
 ALTER TABLE `Hoerbuch` ADD FOREIGN KEY (VerlagId) REFERENCES `Verlag` (`VerlagId`);
 ALTER TABLE `Bild` ADD FOREIGN KEY (NichtTextMedienId) REFERENCES `NichtTextMedien` (`NichtTextMedienId`);
 ALTER TABLE `Bild` ADD FOREIGN KEY (MalerId) REFERENCES `Maler` (`MalerId`);
+ALTER TABLE `Bild` ADD UNIQUE( `NichtTextMedienId`); 
 ALTER TABLE `MediumWortZuord` ADD FOREIGN KEY (MediumId) REFERENCES `Buch` (`ISBN`);
 ALTER TABLE `MediumWortZuord` ADD FOREIGN KEY (Wort) REFERENCES `Schlagwort` (`Wort`);
 ALTER TABLE `Maler` ADD FOREIGN KEY (PersonenId) REFERENCES `Person` (`PersonenId`);
