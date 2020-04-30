@@ -189,7 +189,7 @@ def extractPicture(item):
     val_person = {
         "Vorname": creator.split(" ")[0],
         "Name": creator.split(" ")[-1],
-        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1]}.{fake.tld()}",
+        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1].lower()}.{fake.tld()}",
         "Geburtsdatum": fake.date_of_birth()
     }
 
@@ -295,7 +295,7 @@ def extractBook(item):
     val_person = {
         "Vorname": creator.split(" ")[0],
         "Name": creator.split(" ")[-1],
-        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1]}.{fake.tld()}",
+        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1].lower()}.{fake.tld()}",
         "Geburtsdatum": fake.date_of_birth()
     }
 
@@ -340,7 +340,7 @@ def gen_audiobook(buch_isbn):
     val_person = {
         "Vorname": creator.split(" ")[0],
         "Name": creator.split(" ")[-1],
-        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1]}.{fake.tld()}",
+        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1].lower()}.{fake.tld()}",
         "Geburtsdatum": fake.date_of_birth()
     }
 
@@ -366,7 +366,7 @@ def gen_ausleihe():
     val_person = {
         "Vorname": creator.split(" ")[0],
         "Name": creator.split(" ")[-1],
-        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1]}.{fake.tld()}",
+        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1].lower()}.{fake.tld()}",
         "Geburtsdatum": fake.date_of_birth()
     }
 
