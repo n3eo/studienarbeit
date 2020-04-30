@@ -5,11 +5,13 @@ import mysql.connector
 from faker import Faker
 from base64 import a85encode
 import re
-import random
-import time
+import random, base64
+import time, hashlib
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from db_connection import DbConnection as DBC
+
+random.seed(0)
 
 def timeit(method):
     def timed(*args, **kw):

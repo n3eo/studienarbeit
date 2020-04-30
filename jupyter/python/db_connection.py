@@ -1,6 +1,9 @@
 import mysql.connector
 from datetime import date
 import logging
+import random, base64, hashlib
+
+random.seed(0)
 
 def timeit(method):
     import time
