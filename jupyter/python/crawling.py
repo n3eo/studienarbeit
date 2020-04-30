@@ -10,7 +10,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
     level=logging.INFO,
     datefmt="%H:%M:%S",
-    filename="../jupyter/logs/crawling.log",
+    filename="/app/jupyter/logs/crawling.log",
     filemode='a',
 )
 
