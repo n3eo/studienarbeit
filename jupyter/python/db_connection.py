@@ -151,6 +151,12 @@ class DbConnection():
 
         return first_result[0]
 
+    def __gen_ntm_id(self, values, l=16):
+        # Only even lengths
+        h = str(hashlib.blake2b(bytes(str(values),"utf-8"),digest_size=l//2).hexdigest()).lower()
+        
+        return "n" + h
+
     # @timeit
     def __insert_db_ntm(self, INSERT, values, SELECT=None):
         val = list(values.values())
@@ -161,7 +167,7 @@ class DbConnection():
             first_result = self.__cursor.fetchone()
 
         if not first_result:
-            val = ["n" + str(hash(str(values)))[-16:]] + val
+            val = [self.__gen_ntm_id(values)] + val
             self.__cursor.execute(INSERT, val)
             self.__cnx.commit()
             

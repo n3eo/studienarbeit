@@ -153,7 +153,7 @@ def extractInformation(item):
     subjects = extractListSubject(nestedDictGet(item, "subject"))
     
     fake = Faker()
-    Faker.seed(hash(str(title) + str(subjects)))
+    Faker.seed( hashlib.blake2b(bytes(str(title) + str(sorted(subjects)), "utf-8") ).digest() )
 
     genre_flattend = flattenObj(nestedDictGet(item, "genre")) 
     genre = extractOneGenre(genre_flattend) if genre_flattend != {} else fake.word()
@@ -178,7 +178,7 @@ def extractPicture(item):
         image_a85 = None
 
     fake = Faker()
-    Faker.seed(hash(str(title) + str(subjects)))
+    Faker.seed( hashlib.md5(bytes(str(title) + str(sorted(subjects)), "utf-8")).digest() )
 
     val_sorte = {
         "Name": genre if genre else fake.word(),
@@ -223,7 +223,7 @@ def extractVideo(item):
     language = language_flattend.get("languageTerm_1_#text")
 
     fake = Faker()
-    Faker.seed(hash(str(title) + str(subjects)))
+    Faker.seed( hashlib.md5(bytes(str(title) + str(sorted(subjects)), "utf-8")).digest() )
 
     val_sorte = {
         "Name": genre if genre else fake.word(),
@@ -263,7 +263,7 @@ def extractBook(item):
     price = random.randint(100, 10000)/100
 
     fake = Faker()
-    Faker.seed(hash(str(title) + str(subjects)))
+    Faker.seed( hashlib.md5(bytes(str(title) + str(sorted(subjects)), "utf-8")).digest() )
 
     val_verlag = {
         "Kurzname" : publisher,
