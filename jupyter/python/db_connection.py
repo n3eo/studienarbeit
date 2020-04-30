@@ -27,7 +27,7 @@ class DbConnection():
     __cursor = None
 
     INSERT_SORTE = "INSERT INTO Sorte(Name,Beschreibung) VALUES(%s,%s)"
-    SELECT_SORTE = "SELECT SorteId FROM Sorte WHERE Name=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
+    SELECT_SORTE = "SELECT SorteId FROM Sorte WHERE Name=%s -- AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
     INSERT_VERLAG = "INSERT INTO Verlag(Kurzname, Name, Postleitzahl, Strasse, Internetadresse, Beschreibung) VALUES(%s,%s,%s,%s,%s,%s)"
     SELECT_VERLAG = "SELECT VerlagId FROM Verlag WHERE (Kurzname=%s OR Kurzname IS NULL) AND Name=%s AND (Postleitzahl=%s OR Postleitzahl IS NULL) AND (Strasse=%s OR Strasse IS NULL) AND (Internetadresse=%s OR Internetadresse IS NULL) AND (Beschreibung=%s OR Beschreibung IS NULL);"
@@ -62,10 +62,10 @@ class DbConnection():
     INSERT_NICHTTEXTMEDIEN = "INSERT INTO NichtTextMedien(NichtTextMedienId,Titel,Untertitel,Erscheinungsjahr,Kurzbeschreibung,SorteId,Typ) VALUES(%s,%s,%s,%s,%s,%s,%s)"
     SELECT_NICHTTEXTMEDIEN = "SELECT NichttextmedienId FROM NichtTextMedien WHERE Titel=%s AND (Untertitel=%s OR Untertitel IS NULL) AND (Erscheinungsjahr=%s OR Erscheinungsjahr IS NULL) AND (Kurzbeschreibung=%s OR Kurzbeschreibung IS NULL) AND SorteId=%s AND Typ=%s;"
 
-    INSERT_BILD = "INSERT INTO Bild(NichtTextMedienId,Bild,MalerId) VALUES(%s,%s,%s)"
+    INSERT_BILD = "INSERT IGNORE INTO Bild(NichtTextMedienId,Bild,MalerId) VALUES(%s,%s,%s)"
     SELECT_BILD = "SELECT BildId FROM Bild WHERE NichtTextMedienId=%s AND (Bild=%s OR BILD IS NULL) AND MalerId=%s;"
 
-    INSERT_VIDEO = "INSERT INTO Video(NichtTextMedienId,Sprache) VALUES(%s,%s)"
+    INSERT_VIDEO = "INSERT IGNORE INTO Video(NichtTextMedienId,Sprache) VALUES(%s,%s)"
     SELECT_VIDEO = "SELECT VideoId FROM Video WHERE NichtTextMedienId=%s AND (Sprache=%s OR Sprache IS NULL);"
 
     INSERT_AUSLEIHE = "INSERT INTO Ausleihe(AusleiherId,MediumId) VALUES(%s,%s)"
