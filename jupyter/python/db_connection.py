@@ -153,7 +153,7 @@ class DbConnection():
 
     def __gen_ntm_id(self, values, l=16):
         # Only even lengths
-        h = str(hashlib.blake2b(bytes(str(values),"utf-8"),digest_size=l//2).hexdigest()).lower()
+        h = str(hashlib.blake2b(bytes(str(values),"utf-8"),digest_size=l//2).hexdigest())
         
         return "n" + h
 
