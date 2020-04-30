@@ -177,178 +177,134 @@ class DbConnection():
 
     # @timeit
     def insert_book(self, val_schlagworte, val_verlag, val_buch, val_person, val_autor, val_sorte):
-        try:
-            # print("--- Inserting Sorte")
-            sorte_id = self.__insert_db(
-                self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
-            val_buch["SorteId"] = sorte_id
+        # print("--- Inserting Sorte")
+        sorte_id = self.__insert_db(
+            self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        val_buch["SorteId"] = sorte_id
 
-            # print("--- Inserting Verlag")
-            verlag_id = self.__insert_db(self.INSERT_VERLAG, val_verlag, self.SELECT_VERLAG)
-            val_buch["VerlagId"] = verlag_id
-            
-            # print("--- Inserting Buch")
-            buch_id = self.__insert_db(self.INSERT_BUCH, val_buch)
-
-            # print("--- Inserting Schlagworte")
-            for schlagwort in val_schlagworte:
-                # print("--- --- Inserting Schlagwort")
-                self.__insert_db(self.INSERT_SCHLAGWORT, schlagwort)
-
-                # print("--- --- Inserting MediumWortZuord")
-                val_mediumwortzuord = {
-                    "MediumId": buch_id,
-                    "Wort": schlagwort["Wort"]
-                }
-                self.__insert_db(self.INSERT_MEDIUMWORTZUORD, val_mediumwortzuord)
-
-            # print("--- Inserting Person")
-            person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-            val_autor["PersonenId"] = person_id
-            
-            # print("--- Inserting Autor")
-            autor_id = self.__insert_db(self.INSERT_AUTOR, val_autor, self.SELECT_AUTOR)
-
-            # print("--- Inserting AutorBuchZuord")
-            val_autorbuchzuord = {
-                "AutorId" : autor_id,
-                "IBSN" : val_buch["ISBN"]
-            }
-            self.__insert_db(self.INSERT_AUTORBUCHZUORD, val_autorbuchzuord)
-            # print("--- Done")
-            
-        except Exception as e:
-            logging.error(e, exc_info=log_trace)
-            return False
+        # print("--- Inserting Verlag")
+        verlag_id = self.__insert_db(self.INSERT_VERLAG, val_verlag, self.SELECT_VERLAG)
+        val_buch["VerlagId"] = verlag_id
         
-        return True
+        # print("--- Inserting Buch")
+        buch_id = self.__insert_db(self.INSERT_BUCH, val_buch)
+
+        # print("--- Inserting Schlagworte")
+        for schlagwort in val_schlagworte:
+            # print("--- --- Inserting Schlagwort")
+            self.__insert_db(self.INSERT_SCHLAGWORT, schlagwort)
+
+            # print("--- --- Inserting MediumWortZuord")
+            val_mediumwortzuord = {
+                "MediumId": buch_id,
+                "Wort": schlagwort["Wort"]
+            }
+            self.__insert_db(self.INSERT_MEDIUMWORTZUORD, val_mediumwortzuord)
+
+        # print("--- Inserting Person")
+        person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
+        val_autor["PersonenId"] = person_id
+        
+        # print("--- Inserting Autor")
+        autor_id = self.__insert_db(self.INSERT_AUTOR, val_autor, self.SELECT_AUTOR)
+
+        # print("--- Inserting AutorBuchZuord")
+        val_autorbuchzuord = {
+            "AutorId" : autor_id,
+            "IBSN" : val_buch["ISBN"]
+        }
+        self.__insert_db(self.INSERT_AUTORBUCHZUORD, val_autorbuchzuord)
+            # print("--- Done")
     
     # ### Hörbuch
     # self.INSERT_SORTE, self.INSERT_VERLAG, self.INSERT_BUCH, self.INSERT_SPRECHER
 
     # @timeit
     def insert_hoerbuch(self, val_person, val_sprecher, val_verlag, val_hoerbuch):
-        try:
-            # print("--- Inserting Person")
-            person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-            val_sprecher["PersonenId"] = person_id
+        # print("--- Inserting Person")
+        person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
+        val_sprecher["PersonenId"] = person_id
 
-            # print("--- Inserting Sprecher")
-            sprecher_id = self.__insert_db(self.INSERT_SPRECHER, val_sprecher, self.SELECT_SPRECHER)
-            val_hoerbuch["SprecherId"] = sprecher_id
+        # print("--- Inserting Sprecher")
+        sprecher_id = self.__insert_db(self.INSERT_SPRECHER, val_sprecher, self.SELECT_SPRECHER)
+        val_hoerbuch["SprecherId"] = sprecher_id
 
-            # print("--- Inserting Verlag")
-            verlag_id = self.__insert_db(self.INSERT_VERLAG, val_verlag, self.SELECT_VERLAG)
-            val_hoerbuch["VerlagId"] = verlag_id
+        # print("--- Inserting Verlag")
+        verlag_id = self.__insert_db(self.INSERT_VERLAG, val_verlag, self.SELECT_VERLAG)
+        val_hoerbuch["VerlagId"] = verlag_id
 
-            # print("--- Inserting Hoerbuch")
-            self.__insert_db(self.INSERT_HOERBUCH, val_hoerbuch)
-        
-        except Exception as e:
-            logging.error(e, exc_info=log_trace)
-            return False
-        
-        return True    
+        # print("--- Inserting Hoerbuch")
+        self.__insert_db(self.INSERT_HOERBUCH, val_hoerbuch)
 
     # @timeit
     def insert_ebook(self, val_ebook):
-        try:
-            # print("--- Inserting Ebook")
-            self.__insert_db(self.INSERT_EBOOK, val_ebook)
-        except Exception as e:
-            logging.error(e, exc_info=log_trace)
-            return False
-        
-        return True
+        # print("--- Inserting Ebook")
+        self.__insert_db(self.INSERT_EBOOK, val_ebook)
 
     def insert_ausleiher(self, val_person, val_ausleiher):
-        try:
-            # print("--- Inserting Person")
-            person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-            val_ausleiher["PersonenId"] = person_id
+        # print("--- Inserting Person")
+        person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
+        val_ausleiher["PersonenId"] = person_id
 
-            # print("--- Inserting Ausleiher")
-            self.__insert_db(self.INSERT_AUSLEIHER, val_ausleiher, self.SELECT_AUSLEIHER)
+        # print("--- Inserting Ausleiher")
+        self.__insert_db(self.INSERT_AUSLEIHER, val_ausleiher, self.SELECT_AUSLEIHER)
 
-            # print("--- Done")
-        except Exception as e:
-            logging.error(e, exc_info=log_trace)
-            return False
-        
-        return True
+        # print("--- Done")
 
     # @timeit
     def insert_bild(self, val_sorte, val_person, val_maler, val_nichttextmedien, val_bild):
-        try:
-            # print("--- Inserting Sorte")
-            sorte_id = self.__insert_db(self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
-            val_nichttextmedien["SorteId"] = sorte_id
+        # print("--- Inserting Sorte")
+        sorte_id = self.__insert_db(self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        val_nichttextmedien["SorteId"] = sorte_id
 
-            # print("--- Inserting Person")
-            person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-            val_maler["PersonenId"] = person_id
-            
-            # print("--- Inserting Maler")
-            maler_id = self.__insert_db(self.INSERT_MALER, val_maler, self.SELECT_MALER)
-            val_bild["MalerId"] = maler_id
-
-            # print("--- Inserting NichtTextMedien")
-            val_nichttextmedien["Typ"] = "Bild"
-            ntm_id = self.__insert_db_ntm(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
-            val_bild["NichtTextMedienId"] = ntm_id
-            
-            # print("--- Inserting Bild")
-            self.__insert_db(self.INSERT_BILD, val_bild, self.SELECT_BILD)
-
-            # print("--- Done")        
-        except Exception as e:
-            logging.error(e, exc_info=log_trace)
-            return False
+        # print("--- Inserting Person")
+        person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
+        val_maler["PersonenId"] = person_id
         
-        return True
+        # print("--- Inserting Maler")
+        maler_id = self.__insert_db(self.INSERT_MALER, val_maler, self.SELECT_MALER)
+        val_bild["MalerId"] = maler_id
+
+        # print("--- Inserting NichtTextMedien")
+        val_nichttextmedien["Typ"] = "Bild"
+        ntm_id = self.__insert_db_ntm(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
+        val_bild["NichtTextMedienId"] = ntm_id
+        
+        # print("--- Inserting Bild")
+        self.__insert_db(self.INSERT_BILD, val_bild, self.SELECT_BILD)
+
+        # print("--- Done")    
 
     # @timeit
     def insert_video(self, val_sorte, val_nichttextmedien, val_video):
-        try:
-            # print("--- Inserting Sorte")
-            sorte_id = self.__insert_db(self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
-            val_nichttextmedien["SorteId"] = sorte_id
+        # print("--- Inserting Sorte")
+        sorte_id = self.__insert_db(self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        val_nichttextmedien["SorteId"] = sorte_id
 
-            # print("--- Inserting NichtTextMedien")
-            val_nichttextmedien["Typ"] = "Video"
-            ntm_id = self.__insert_db_ntm(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
-            val_video["NichtTextMedienId"] = ntm_id
+        # print("--- Inserting NichtTextMedien")
+        val_nichttextmedien["Typ"] = "Video"
+        ntm_id = self.__insert_db_ntm(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
+        val_video["NichtTextMedienId"] = ntm_id
 
-            # print("--- Inserting Video")
-            self.__insert_db(self.INSERT_VIDEO, val_video, self.SELECT_VIDEO)
+        # print("--- Inserting Video")
+        self.__insert_db(self.INSERT_VIDEO, val_video, self.SELECT_VIDEO)
 
-            # print("--- Done")        
-        except Exception as e:
-            logging.error(e, exc_info=log_trace)
-            return False
-        
-        return True
+        # print("--- Done")     
 
     # @timeit
     def insert_ausleihe(self, val_person, val_ausleiher, ISBN):
-        try:
-            # print("--- Inserting Person")
-            person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-            val_ausleiher["PersonenId"] = person_id
+        # print("--- Inserting Person")
+        person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
+        val_ausleiher["PersonenId"] = person_id
 
-            # print("--- Inserting Ausleiher")
-            ausleiher_id = self.__insert_db(self.INSERT_AUSLEIHER, val_ausleiher, self.SELECT_AUSLEIHER)
+        # print("--- Inserting Ausleiher")
+        ausleiher_id = self.__insert_db(self.INSERT_AUSLEIHER, val_ausleiher, self.SELECT_AUSLEIHER)
 
-            val_ausleihe = {
-                "AusleiherId": ausleiher_id,
-                "MediumId": ISBN
-            }
-            self.__insert_db(self.INSERT_AUSLEIHE, val_ausleihe)
-        except Exception as e:
-            logging.error(e, exc_info=log_trace)
-            return False
-        
-        return True
+        val_ausleihe = {
+            "AusleiherId": ausleiher_id,
+            "MediumId": ISBN
+        }
+        self.__insert_db(self.INSERT_AUSLEIHE, val_ausleihe)
 
 if __name__ == "__main_":
     dbc = DbConnection()
