@@ -7,8 +7,6 @@ from base64 import a85encode
 import re
 import random, base64
 import time, hashlib
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-
 from db_connection import DbConnection as DBC
 
 random.seed(0)
@@ -167,19 +165,20 @@ def extractPicture(item):
     # only gets small preview
     location_flattend = flattenObj(nestedDictGet(item, "location"))
     url = extractURL(location_flattend)
-    if url:
-        try:
-            r = requests.get(url)
-            image_a85 = a85encode(r.content)
-        except Exception as e:
-            logging.error(e)
-            image_a85 = None
-    else:
-        image_a85 = None
+    # if url:
+    #     try:
+    #         r = requests.get(url)
+    #         image_a85 = a85encode(r.content)
+    #     except Exception as e:
+    #         logging.error(e)
+    #         image_a85 = None
+    # else:
+    #     image_a85 = None
+    image_a85 = url
 
     fake = Faker()
     Faker.seed( hashlib.md5(bytes(str(title) + str(sorted(subjects)), "utf-8")).digest() )
-
+    
     val_sorte = {
         "Name": genre if genre else fake.word(),
         "Beschreibung": fake.paragraph()
@@ -380,55 +379,8 @@ def gen_ausleihe():
 
     return val_person, val_ausleiher
 
-def setup():
-    logging.basicConfig(filename="../jupyter/logs/api_requests.log",
-                    filemode='a',
-                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                    datefmt='%H:%M:%S',
-                    level=logging.INFO)
-
-    dbc = DBC()
-
-    start = 0 # 0
-    rtyp = "text" # "still%20image" "moving%20image"
-    default_sleep_time = 2
-
-    r = requests.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&sort=recordIdentifier&resourceType={rtyp}")
-    obj = json.loads(r.text)
-
-    total = obj.get("pagination").get("numFound")
-
-    return dbc, start, rtyp, default_sleep_time, total
-
-async def submain(start_value,rtyp,dbc,total):
-    t_start = time.time()
-    async with httpx.AsyncClient() as client:
-        r = await client.get(f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier&resourceType={rtyp}")
-
-    obj = json.loads(r.text)
-
-    print("Processing items...")
-    for item in obj["items"]["mods"]:
-        try:
-            if item["typeOfResource"] == "text":
-                val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte = await extractBook(item)
-                dbc.insert_book(val_schlagwort, val_verlag,
-                                val_buch, val_person, val_autor, val_sorte)
-            elif item["typeOfResource"] == "moving image":
-                val_sorte, val_nichttextmedien, val_video = await extractVideo(item)
-                dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
-            else:
-                val_sorte, val_person, val_maler, val_nichttextmedien, val_bild = await extractPicture(item)
-                dbc.insert_bild(val_sorte, val_person,
-                                val_maler, val_nichttextmedien, val_bild)
-        except Exception as e:
-            logging.error(e, exc_info=True)
-    logging.info(
-        f"{(start_value+1)*250} of {total} ({(((start_value+1)*250)/total)*100} %)")
-    logging.info(f"Took: {time.time()-t_start}")
-
 # @timeit
-def concurrent_submain(id):
+def process_json(id):
     t_start = time.time()
     dbc = DBC()
     logging.info(f"Loading: {id}")
@@ -436,14 +388,21 @@ def concurrent_submain(id):
     
     j = dbc.get_json(id)
     obj = json.loads(j)
-    logging.info(f"Loaded: {id}")
+    l = len(obj["items"]["mods"])
+    logging.info(f"Loaded: {id} with {l} items")
 
-    for item in obj["items"]["mods"]:
+    for num, item in enumerate(obj["items"]["mods"]):
         try:
+            # t = item["typeOfResource"]
+            # logging.info(f"Type of {id}:i{num} -> {t}")
             if item["typeOfResource"] == "text":
+                # ldb = dbc.get_len("Buch")
                 val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte = extractBook(item)
                 dbc.insert_book(val_schlagwort, val_verlag,
                                 val_buch, val_person, val_autor, val_sorte)
+                # ldbd = dbc.get_len("Buch")
+                # if ldb == ldbd:
+                #     logging.info(f"Len of {id}:i{num} after insert same as before ({ldb}).")
                 # Random insert of ebook
                 if random.random() < 0.4:
                     val_ebook = gen_ebook(val_buch["ISBN"])
@@ -457,40 +416,27 @@ def concurrent_submain(id):
                     val_person, val_ausleiher = gen_ausleihe()
                     dbc.insert_ausleihe(val_person, val_ausleiher, val_buch["ISBN"])
             elif item["typeOfResource"] == "moving image":
+                # ldb = dbc.get_len("Video")
                 val_sorte, val_nichttextmedien, val_video = extractVideo(item)
                 dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
+                # ldbd = dbc.get_len("Video")
+                # if ldb == ldbd:
+                #     logging.info(f"Len of {id}:i{num} after insert same as before ({ldb}).")
             elif item["typeOfResource"] == "still image":
+                # ldb = dbc.get_len()
                 val_sorte, val_person, val_maler, val_nichttextmedien, val_bild = extractPicture(item)
                 dbc.insert_bild(val_sorte, val_person,
                                 val_maler, val_nichttextmedien, val_bild)
+                # ldbd = dbc.get_len()
+                # if ldb == ldbd:
+                #     logging.info(f"Len of {id}:i{num} after insert same as before ({ldb}).")
+            logging.info(f"Processed {id}:i{num}")
         except Exception as e:
-            logging.error(e, exc_info=True)
-    logging.info(f"Processed: {id} in {round(time.time()-t_start,2)}s")
-    dbc.del_id(id)
+            logging.error(f"{id}:i{num}: {e}", exc_info=True)
+    logging.info(f"Done with: {id} in {round(time.time()-t_start,2)}s")
+    # dbc.del_id(id)
     dbc.close()
     
-
-async def main(dbc, start, rtyp, default_sleep_time, total):
-    for start_value in range( start, total // 250 + 1):
-        await submain(start_value,rtyp,dbc,total)
-    
-if __name__ == "__main__":
-    logging.basicConfig(
-        format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
-        level=logging.INFO,
-        datefmt="%H:%M:%S",
-        filename="../jupyter/logs/concurrent_db_ingestions.log",
-        filemode='a',
-    )
-
-    workers = 128
-    dbc = DBC()
-    results = dbc.get_jsons()
-    dbc.close()
-
-    with ProcessPoolExecutor(max_workers=workers) as executor:
-        for _ in executor.map(concurrent_submain, results):
-            pass
 
 
 

@@ -9,10 +9,9 @@ def main():
     cursor = cnx.cursor()
 
     cursor.execute("DROP TABLE IF EXISTS `api_request`;")
-    cnx.commit()
-    cursor.execute("CREATE TABLE `api_request` (`ID` int(11) NOT NULL,`Status` varchar(20) COLLATE utf8_bin NOT NULL DEFAULT 'Pending', `JSON` longblob NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-    cnx.commit()
+    cursor.execute("CREATE TABLE `api_request` (`ID` int(11) NOT NULL,`Status` varchar(20) COLLATE utf8_bin NOT NULL DEFAULT 'Pending', `JSON` longblob NULL, `HASH` VARCHAR(64) NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
     cursor.execute("ALTER TABLE `api_request` ADD PRIMARY KEY (`ID`);")
+    cursor.execute("ALTER TABLE `api_request` ADD UNIQUE(`HASH`); ")
     cnx.commit()
 
     total = json.loads(requests.get(

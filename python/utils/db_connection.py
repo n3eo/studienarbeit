@@ -2,7 +2,6 @@ import mysql.connector
 from datetime import date
 import logging
 import random, base64, hashlib
-
 random.seed(0)
 
 def timeit(method):
@@ -121,6 +120,10 @@ class DbConnection():
         i = self.__cursor.fetchone()
         return i[0]
 
+    def get_len(self, table="Bild"):
+        self.__cursor.execute(
+            f'SELECT * FROM {table};')
+        return self.__cursor.rowcount
 
     def insert_json(self, id, json):
         self.__cursor.execute(
