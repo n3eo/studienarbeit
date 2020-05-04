@@ -17,7 +17,7 @@ def main():
     total = json.loads(requests.get(
         f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&sort=recordIdentifier").text).get("pagination").get("numFound")
 
-    for i in range(total // 250 + 1):
+    for i in range((total // 250) + 2):
         cursor.execute(f"INSERT IGNORE INTO api_request(ID) VALUES({i});")
     cnx.commit()
 
