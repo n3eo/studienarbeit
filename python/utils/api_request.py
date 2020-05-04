@@ -7,7 +7,7 @@ from base64 import a85encode
 import re
 import random, base64
 import time, hashlib
-from db_connection import DbConnection as DBC
+from utils.db_connection import DbConnection as DBC
 
 random.seed(0)
 
@@ -430,13 +430,9 @@ def process_json(id):
                 # ldbd = dbc.get_len()
                 # if ldb == ldbd:
                 #     logging.info(f"Len of {id}:i{num} after insert same as before ({ldb}).")
-            logging.info(f"Processed {id}:i{num}")
+            # logging.info(f"Processed {id}:i{num}")
         except Exception as e:
-            logging.error(f"{id}:i{num}: {e}", exc_info=True)
+            logging.error(f"{id}:i{num}: {e}", exc_info=False)
     logging.info(f"Done with: {id} in {round(time.time()-t_start,2)}s")
     # dbc.del_id(id)
     dbc.close()
-    
-
-
-
