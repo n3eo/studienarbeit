@@ -45,14 +45,14 @@ def insert_hash(cnx, cursor, id, hash):
     cnx.commit()
 
 def crawlJSON(start_value):
-    time.sleep(random.random()*((start_value % workers / workers) * 5))
+    time.sleep(random.random()*2)
     t_start = time.time()
 
     logging.info(f"Crawling {start_value}")
     # set_prossesing(cnx, cursor, start_value)
     try:
         r = requests.get(
-            f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value*250}&sort=recordIdentifier", timeout=30 if workers < 30 else workers)
+            f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value - (0 if start_value <= 100000 else 100000)}&sort.{'asc' if start_value <= 100000 else 'desc'}=recordIdentifier", timeout=30 if workers < 30 else workers)
     except Exception as e:
         logging.error(f"Crawling {start_value} failed with the error: {e}", exc_info=False)
         return
@@ -86,9 +86,9 @@ logging.basicConfig(
 )
 
 if __name__ == "__main__":
-    workers = 32
+    workers = 24
 
-    results = get_pending()[:4096]
+    results = get_pending()[:256]
 
     with ProcessPoolExecutor(max_workers=workers) as executor:
         for _ in executor.map(crawlJSON, results):
