@@ -6,42 +6,42 @@ import sys
 import hashlib
 import time, random
 
-def get_pending():
+def get_pending(typ="text"):
     cnx = mysql.connector.connect(
         host='db', port='3306', database='nico_studienarbeit', user='studienarbeit', password='dbstuar2020')
 
     cursor = cnx.cursor(buffered=True)
 
     cursor.execute(
-        'SELECT ID FROM api_request WHERE Status="Pending"')  # OR JSON IS NULL
+        f'SELECT ID FROM api_request_{typ} WHERE Status="Pending"')  # OR JSON IS NULL
     results = cursor.fetchall()
     return [i[0] for i in results]
 
-def set_status(cnx, cursor, id, status):
+def set_status(cnx, cursor, id, status, typ):
     cursor.execute(
-        f'UPDATE api_request SET Status="{status}" WHERE ID={id}')
+        f'UPDATE api_request_{typ} SET Status="{status}" WHERE ID={id}')
     cnx.commit()
 
-def set_prossesing(cnx, cursor, id):
-    set_status(cnx, cursor, id, "Processing")
+def set_prossesing(cnx, cursor, id, typ="text"):
+    set_status(cnx, cursor, id, "Processing", typ)
 
-def set_done(cnx, cursor, id):
-    set_status(cnx, cursor, id, "Done")
+def set_done(cnx, cursor, id, typ="text"):
+    set_status(cnx, cursor, id, "Done", typ)
 
-def set_json(cnx, cursor, id):
-    set_status(cnx, cursor, id, "JSON")
+def set_json(cnx, cursor, id, typ="text"):
+    set_status(cnx, cursor, id, "JSON", typ)
 
-def set_pending(cnx, cursor, id):
-    set_status(cnx, cursor, id, "Pending")
+def set_pending(cnx, cursor, id, typ="text"):
+    set_status(cnx, cursor, id, "Pending", typ)
 
-def insert_json(cnx, cursor, id, json):
+def insert_json(cnx, cursor, id, json, typ):
     cursor.execute(
-        "UPDATE api_request SET JSON=%s WHERE ID=%s", (json, id))
+        f"UPDATE api_request_{typ} SET JSON=%s WHERE ID=%s", (json, id))
     cnx.commit()
 
-def insert_hash(cnx, cursor, id, hash):
+def insert_hash(cnx, cursor, id, hash, typ):
     cursor.execute(
-        "UPDATE api_request SET HASH=%s WHERE ID=%s", (hash, id))
+        f"UPDATE api_request_{typ} SET HASH=%s WHERE ID=%s", (hash, id))
     cnx.commit()
 
 def crawlJSON(start_value):
@@ -49,10 +49,10 @@ def crawlJSON(start_value):
     t_start = time.time()
 
     logging.info(f"Crawling {start_value}")
-    # set_prossesing(cnx, cursor, start_value)
+    # set_prossesing(cnx, cursor, start_value, TYP)
     try:
         r = requests.get(
-            f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value - (0 if start_value <= 100000 else 100000)}&sort.{'asc' if start_value <= 100000 else 'desc'}=recordIdentifier", timeout=30 if workers < 30 else workers)
+            f"https://api.lib.harvard.edu/v2/items.json?q=*&limit=250&start={start_value - (0 if start_value <= 100000 else 100000)}&sort.{'asc' if start_value <= 100000 else 'desc'}=recordIdentifier&resourceType={TYP}".replace("_"," "), timeout=30 if workers < 30 else workers)
     except Exception as e:
         logging.error(f"Crawling {start_value} failed with the error: {e}", exc_info=False)
         return
@@ -66,12 +66,12 @@ def crawlJSON(start_value):
 
     cursor = cnx.cursor(buffered=True)
 
-    insert_json(cnx, cursor, start_value, r.content)
+    insert_json(cnx, cursor, start_value, r.content, TYP)
     try:
-        insert_hash(cnx, cursor, start_value, hashlib.blake2s(r.content).hexdigest())
+        insert_hash(cnx, cursor, start_value, hashlib.blake2s(r.content).hexdigest(), TYP)
     except Exception as e:
         logging.warning(f"Crawling {start_value} resulted in an duplicate error: {e}")
-    set_json(cnx, cursor, start_value)
+    set_json(cnx, cursor, start_value, TYP)
     
     cnx.close()
     
@@ -86,9 +86,23 @@ logging.basicConfig(
 )
 
 if __name__ == "__main__":
-    workers = 24
+    workers = 16
 
-    results = get_pending()[:256]
+    TYP = "moving_image"
+    results = get_pending(TYP)
+    if not results:
+        TYP = "still_image"
+        results = get_pending(TYP)
+    if not results:
+        TYP = "text"
+        results = get_pending(TYP)
+    
+    # No results
+    if not results:
+        logging.info("Nothing to crawl. Crawling done.")
+        exit(1)
+    
+    results = results[:384]
 
     with ProcessPoolExecutor(max_workers=workers) as executor:
         for _ in executor.map(crawlJSON, results):
