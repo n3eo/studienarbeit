@@ -34,6 +34,7 @@ class DbConnection():
     INSERT_BUCH = "INSERT IGNORE INTO Buch(ISBN,Titel,Untertitel,VerlagId,Erscheinungsjahr,SorteId,Kurzbeschreibung,Preis,Auflage,Sprache) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
     
     INSERT_AUTORBUCHZUORD = "INSERT IGNORE INTO AutorBuchZuord(AutorId,ISBN) VALUES(%s,%s);"
+    SELECT_AUTORBUCHZUORD = "SELECT AutorBuchZuordId FROM AutorBuchZuord WHERE AutorId=%s AND ISBN=%s;"
 
     INSERT_MEDIUMWORTZUORD = "INSERT IGNORE INTO MediumWortZuord(MediumId,Wort) VALUES(%s,%s)"
 
@@ -58,7 +59,7 @@ class DbConnection():
     INSERT_MALER = "INSERT INTO Maler(PersonenId,Beschreibung) VALUES(%s,%s)"
     SELECT_MALER = "SELECT MalerId FROM Maler WHERE PersonenId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
-    INSERT_NICHTTEXTMEDIEN = "INSERT INTO NichtTextMedien(NichtTextMedienId,Titel,Untertitel,Erscheinungsjahr,Kurzbeschreibung,SorteId,Typ) VALUES(%s,%s,%s,%s,%s,%s,%s)"
+    INSERT_NICHTTEXTMEDIEN = "INSERT INTO NichtTextMedien(Titel,Untertitel,Erscheinungsjahr,Kurzbeschreibung,SorteId,Typ) VALUES(%s,%s,%s,%s,%s,%s)"
     SELECT_NICHTTEXTMEDIEN = "SELECT NichttextmedienId FROM NichtTextMedien WHERE Titel=%s AND (Untertitel=%s OR Untertitel IS NULL) AND (Erscheinungsjahr=%s OR Erscheinungsjahr IS NULL) AND (Kurzbeschreibung=%s OR Kurzbeschreibung IS NULL) AND SorteId=%s AND Typ=%s;"
 
     INSERT_BILD = "INSERT IGNORE INTO Bild(NichtTextMedienId,Bild,MalerId) VALUES(%s,%s,%s)"
