@@ -380,29 +380,24 @@ def gen_ausleihe():
     return val_person, val_ausleiher
 
 # @timeit
-def process_json(id):
+def process_json(res):
+    id, TYP = res
+
     t_start = time.time()
     dbc = DBC()
     logging.info(f"Loading: {id}")
     
     
-    j = dbc.get_json(id)
+    j = dbc.get_json(id, TYP)
     obj = json.loads(j)
-    l = len(obj["items"]["mods"])
-    logging.info(f"Loaded: {id} with {l} items")
+    logging.info(f"Loaded: {id}")
 
     for num, item in enumerate(obj["items"]["mods"]):
         try:
-            # t = item["typeOfResource"]
-            # logging.info(f"Type of {id}:i{num} -> {t}")
             if item["typeOfResource"] == "text":
-                # ldb = dbc.get_len("Buch")
                 val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte = extractBook(item)
                 dbc.insert_book(val_schlagwort, val_verlag,
                                 val_buch, val_person, val_autor, val_sorte)
-                # ldbd = dbc.get_len("Buch")
-                # if ldb == ldbd:
-                #     logging.info(f"Len of {id}:i{num} after insert same as before ({ldb}).")
                 # Random insert of ebook
                 if random.random() < 0.4:
                     val_ebook = gen_ebook(val_buch["ISBN"])
@@ -416,23 +411,15 @@ def process_json(id):
                     val_person, val_ausleiher = gen_ausleihe()
                     dbc.insert_ausleihe(val_person, val_ausleiher, val_buch["ISBN"])
             elif item["typeOfResource"] == "moving image":
-                # ldb = dbc.get_len("Video")
                 val_sorte, val_nichttextmedien, val_video = extractVideo(item)
                 dbc.insert_video(val_sorte, val_nichttextmedien, val_video)
-                # ldbd = dbc.get_len("Video")
-                # if ldb == ldbd:
-                #     logging.info(f"Len of {id}:i{num} after insert same as before ({ldb}).")
             elif item["typeOfResource"] == "still image":
-                # ldb = dbc.get_len()
                 val_sorte, val_person, val_maler, val_nichttextmedien, val_bild = extractPicture(item)
                 dbc.insert_bild(val_sorte, val_person,
                                 val_maler, val_nichttextmedien, val_bild)
-                # ldbd = dbc.get_len()
-                # if ldb == ldbd:
-                #     logging.info(f"Len of {id}:i{num} after insert same as before ({ldb}).")
-            # logging.info(f"Processed {id}:i{num}")
         except Exception as e:
             logging.error(f"{id}:i{num}: {e}", exc_info=False)
     logging.info(f"Done with: {id} in {round(time.time()-t_start,2)}s")
-    # dbc.del_id(id)
+    # dbc.set_done(id, TYP)    
+    dbc.del_id(id, TYP)
     dbc.close()

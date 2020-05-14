@@ -86,54 +86,29 @@ class DbConnection():
     def close(self):
         self.__del__()
     
-    def __set_status(self, id, status):
+    def __set_status(self, id, status, typ):
         self.__cursor.execute(
-            f'UPDATE api_request SET Status="{status}" WHERE ID={id}')
+            f'UPDATE api_request_{typ} SET Status="{status}" WHERE ID={id}')
         self.__cnx.commit()
 
-    def set_prossesing(self, id):
-        self.__set_status(id, "Processing")
-
-    def set_done(self, id):
-        self.__set_status(id, "Done")
-    
-    def set_json(self, id):
-        self.__set_status(id, "JSON")
-    
-    def set_pending(self, id):
-        self.__set_status(id, "Pending")
-    
-    def get_pending(self):
+    def set_done(self, id, typ):
+        self.__set_status(id, "Done", typ)
+      
+    def get_jsons(self, typ):
         self.__cursor.execute(
-            'SELECT ID FROM api_request WHERE Status="Pending"')  # OR JSON IS NULL
+            f'SELECT ID FROM api_request_{typ} WHERE Status="JSON";')  # OR JSON IS NULL
         results = self.__cursor.fetchall()
-        return [i[0] for i in results]
-    
-    def get_jsons(self):
-        self.__cursor.execute(
-            'SELECT ID FROM api_request WHERE Status="JSON";')  # OR JSON IS NULL
-        results = self.__cursor.fetchall()
-        return [i[0] for i in results]
+        return [(i[0], typ) for i in results]
 
-    def get_json(self, id):
+    def get_json(self, id, typ):
         self.__cursor.execute(
-            f'SELECT JSON FROM api_request WHERE ID={id};')  # OR JSON IS NULL
+            f'SELECT JSON FROM api_request_{typ} WHERE ID={id};')  # OR JSON IS NULL
         i = self.__cursor.fetchone()
         return i[0]
 
-    def get_len(self, table="Bild"):
+    def del_id(self, id, typ):
         self.__cursor.execute(
-            f'SELECT * FROM {table};')
-        return self.__cursor.rowcount
-
-    def insert_json(self, id, json):
-        self.__cursor.execute(
-            "UPDATE api_request SET JSON=%s WHERE ID=%s", (json, id))
-        self.__cnx.commit()
-
-    def del_id(self, id):
-        self.__cursor.execute(
-            f"DELETE FROM api_request WHERE ID={id};")
+            f"DELETE FROM api_request_{typ} WHERE ID={id};")
         self.__cnx.commit()
     
     # @timeit
@@ -152,30 +127,6 @@ class DbConnection():
                 return self.__cursor.lastrowid
             else:
                 return val[0]
-
-        return first_result[0]
-
-    def __gen_ntm_id(self, values, l=16):
-        # Only even lengths
-        h = str(hashlib.blake2b(bytes(str(values),"utf-8"),digest_size=l//2).hexdigest())
-        
-        return "n" + h
-
-    # @timeit
-    def __insert_db_ntm(self, INSERT, values, SELECT=None):
-        val = list(values.values())
-
-        first_result = None
-        if SELECT:
-            self.__cursor.execute(SELECT, val)
-            first_result = self.__cursor.fetchone()
-
-        if not first_result:
-            val = [self.__gen_ntm_id(values)] + val
-            self.__cursor.execute(INSERT, val)
-            self.__cnx.commit()
-            
-            return val[0]
 
         return first_result[0]
 
@@ -217,7 +168,7 @@ class DbConnection():
             "AutorId" : autor_id,
             "IBSN" : val_buch["ISBN"]
         }
-        self.__insert_db(self.INSERT_AUTORBUCHZUORD, val_autorbuchzuord)
+        self.__insert_db(self.INSERT_AUTORBUCHZUORD, val_autorbuchzuord, self.SELECT_AUTORBUCHZUORD)
             # print("--- Done")
     
     # ### Hörbuch
@@ -271,7 +222,7 @@ class DbConnection():
 
         # print("--- Inserting NichtTextMedien")
         val_nichttextmedien["Typ"] = "Bild"
-        ntm_id = self.__insert_db_ntm(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
+        ntm_id = self.__insert_db(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
         val_bild["NichtTextMedienId"] = ntm_id
         
         # print("--- Inserting Bild")
@@ -287,7 +238,7 @@ class DbConnection():
 
         # print("--- Inserting NichtTextMedien")
         val_nichttextmedien["Typ"] = "Video"
-        ntm_id = self.__insert_db_ntm(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
+        ntm_id = self.__insert_db(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
         val_video["NichtTextMedienId"] = ntm_id
 
         # print("--- Inserting Video")
@@ -310,7 +261,7 @@ class DbConnection():
         }
         self.__insert_db(self.INSERT_AUSLEIHE, val_ausleihe)
 
-if __name__ == "__main_":
+if __name__ == "__main__":
     dbc = DbConnection()
 
     val_verlag = {
