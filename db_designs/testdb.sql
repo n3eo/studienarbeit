@@ -23,6 +23,30 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
+DROP TABLE IF EXISTS `MediumWortZuord`;
+DROP TABLE IF EXISTS `Schlagwort`;
+
+DROP TABLE IF EXISTS `Ausleihe`;
+
+DROP TABLE IF EXISTS `Video`;
+DROP TABLE IF EXISTS `Bild`;
+DROP TABLE IF EXISTS `NichtTextMedien`;
+
+DROP TABLE IF EXISTS `Ebooks`;
+DROP TABLE IF EXISTS `Hoerbuch`;
+
+DROP TABLE IF EXISTS `AutorBuchZuord`;
+DROP TABLE IF EXISTS `Buch`;
+
+DROP TABLE IF EXISTS `Sorte`;
+DROP TABLE IF EXISTS `Verlag`;
+
+DROP TABLE IF EXISTS `Maler`;
+DROP TABLE IF EXISTS `Ausleiher`;
+DROP TABLE IF EXISTS `Sprecher`;
+DROP TABLE IF EXISTS `Autor`;
+DROP TABLE IF EXISTS `Person`;
+
 --
 -- Tabellenstruktur für Tabelle `Ausleihe`
 --
@@ -213,6 +237,7 @@ INSERT INTO `Maler` (`MalerId`, `PersonenId`, `Beschreibung`) VALUES
 --
 
 CREATE TABLE `MediumWortZuord` (
+  `MediumWortId` VARCHAR(11) NOT NULL,
   `MediumId` varchar(17) NOT NULL,
   `Wort` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -221,9 +246,9 @@ CREATE TABLE `MediumWortZuord` (
 -- Daten für Tabelle `MediumWortZuord`
 --
 
-INSERT INTO `MediumWortZuord` (`MediumId`, `Wort`) VALUES
-('1234567890123', 'Fun'),
-('1234567890123', 'Lust');
+INSERT INTO `MediumWortZuord` (`MediumWortId`, `MediumId`, `Wort`) VALUES
+(1, '1234567890123', 'Fun'),
+(2, '1234567890123', 'Lust');
 
 -- --------------------------------------------------------
 
@@ -451,6 +476,7 @@ ALTER TABLE `Maler`
 -- Indizes für die Tabelle `MediumWortZuord`
 --
 ALTER TABLE `MediumWortZuord`
+  Add PRIMARY KEY (`MediumWortId`),
   ADD KEY `MediumId` (`MediumId`),
   ADD KEY `Wort` (`Wort`);
 
@@ -538,6 +564,12 @@ ALTER TABLE `Bild`
 --
 ALTER TABLE `Maler`
   MODIFY `MalerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT für Tabelle `MediumWortZuord`
+--
+ALTER TABLE `MediumWortZuord`
+  MODIFY `MediumWortId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT für Tabelle `NichtTextMedien`

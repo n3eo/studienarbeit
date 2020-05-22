@@ -33,10 +33,11 @@ class DbConnection():
 
     INSERT_BUCH = "INSERT IGNORE INTO Buch(ISBN,Titel,Untertitel,VerlagId,Erscheinungsjahr,SorteId,Kurzbeschreibung,Preis,Auflage,Sprache) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
     
-    INSERT_AUTORBUCHZUORD = "INSERT IGNORE INTO AutorBuchZuord(AutorId,ISBN) VALUES(%s,%s);"
+    INSERT_AUTORBUCHZUORD = "INSERT INTO AutorBuchZuord(AutorId,ISBN) VALUES(%s,%s);"
     SELECT_AUTORBUCHZUORD = "SELECT AutorBuchZuordId FROM AutorBuchZuord WHERE AutorId=%s AND ISBN=%s;"
 
-    INSERT_MEDIUMWORTZUORD = "INSERT IGNORE INTO MediumWortZuord(MediumId,Wort) VALUES(%s,%s)"
+    INSERT_MEDIUMWORTZUORD = "INSERT INTO MediumWortZuord(MediumId,Wort) VALUES(%s,%s)"
+    SELECT_MEDIUMWORTZUORD = "SELECT MediumWortId FROM MediumWortZuord WHERE MediumId=%s AND Wort=%s;"
 
     INSERT_SCHLAGWORT = "INSERT IGNORE INTO Schlagwort(Wort,Beschreibung) VALUES(%s,%s)"
 
@@ -154,7 +155,7 @@ class DbConnection():
                 "MediumId": buch_id,
                 "Wort": schlagwort["Wort"]
             }
-            self.__insert_db(self.INSERT_MEDIUMWORTZUORD, val_mediumwortzuord)
+            self.__insert_db(self.INSERT_MEDIUMWORTZUORD, val_mediumwortzuord, self.SELECT_MEDIUMWORTZUORD)
 
         # print("--- Inserting Person")
         person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
