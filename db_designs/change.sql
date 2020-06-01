@@ -1,10 +1,18 @@
-ALTER TABLE NichtTextMedien MODIFY Typ ENUM('Video','Bild','Text');
+ALTER TABLE NichtTextMedium MODIFY Typ ENUM('Video','Bild','Text');
 
-INSERT INTO NichtTextMedien(Titel, Untertitel, Erscheinungsjahr, Kurzbeschreibung, SorteId, Typ) SELECT Titel, Untertitel, Erscheinungsjahr, Kurzbeschreibung, SorteId, "Text" FROM Buch;
+INSERT INTO NichtTextMedium(Titel, Untertitel, Erscheinungsjahr, Kurzbeschreibung, SorteId, Typ) SELECT Titel, Untertitel, Erscheinungsjahr, Kurzbeschreibung, SorteId, "Text" FROM Buch;
 
 ALTER TABLE Buch ADD COLUMN BuchId Integer(13) NOT NULL DEFAULT 0 FIRST;
-UPDATE Buch LEFT JOIN NichtTextMedien ON NichtTextMedien.Titel = Buch.Titel AND NichtTextMedien.Untertitel = Buch.Untertitel AND NichtTextMedien.Kurzbeschreibung = Buch.Kurzbeschreibung AND NichtTextMedien.SorteId = Buch.SorteId AND NichtTextMedien.Erscheinungsjahr = Buch.Erscheinungsjahr SET Buch.BuchId=NichtTextMedien.NichtTextMedienId;
-ALTER TABLE Buch ADD CONSTRAINT Buch_infk_1 FOREIGN KEY (BuchId) REFERENCES NichtTextMedien(NichtTextMedienId);
+
+# UPDATE Buch LEFT JOIN NichtTextMedium ON NichtTextMedium.Titel = Buch.Titel AND NichtTextMedium.Untertitel = Buch.Untertitel AND NichtTextMedium.Kurzbeschreibung = Buch.Kurzbeschreibung AND NichtTextMedium.SorteId = Buch.SorteId AND NichtTextMedium.Erscheinungsjahr = Buch.Erscheinungsjahr SET Buch.BuchId=NichtTextMedium.NichtTextMediumId;
+UPDATE Buch LEFT JOIN NichtTextMedium ON NichtTextMedium.Titel = Buch.Titel 
+	AND (NichtTextMedium.Untertitel = Buch.Untertitel OR NichtTextMedium.Untertitel IS NULL OR Buch.Untertitel IS NULL)
+    AND (NichtTextMedium.Kurzbeschreibung = Buch.Kurzbeschreibung OR NichtTextMedium.Kurzbeschreibung IS NULL OR Buch.Kurzbeschreibung IS NULL)
+    AND NichtTextMedium.SorteId = Buch.SorteId 
+    AND (NichtTextMedium.Erscheinungsjahr = Buch.Erscheinungsjahr OR NichtTextMedium.Erscheinungsjahr IS NULL OR Buch.Erscheinungsjahr IS NULL)
+    SET Buch.BuchId=NichtTextMedium.NichtTextMediumId;
+
+ALTER TABLE Buch ADD CONSTRAINT Buch_infk_1 FOREIGN KEY (BuchId) REFERENCES NichtTextMedium(NichtTextMediumId);
 ALTER TABLE Buch DROP Titel;
 ALTER TABLE Buch DROP Untertitel;
 ALTER TABLE Buch DROP Erscheinungsjahr;
@@ -12,11 +20,11 @@ ALTER TABLE Buch DROP Kurzbeschreibung;
 ALTER TABLE Buch DROP FOREIGN KEY Buch_ibfk_2;
 ALTER TABLE Buch DROP SorteId;
 
-ALTER TABLE Ebooks ADD COLUMN BuchId Integer(13) NOT NULL DEFAULT 0 AFTER ISBN;
-UPDATE Ebooks LEFT JOIN Buch ON Buch.ISBN = Ebooks.BuchISBN SET Ebooks.BuchId=Buch.BuchId;
-ALTER TABLE Ebooks ADD CONSTRAINT Ebooks_infk_1 FOREIGN KEY (BuchId) REFERENCES Buch(BuchId);
-ALTER TABLE Ebooks DROP FOREIGN KEY Ebooks_ibfk_1;
-ALTER TABLE Ebooks DROP BuchISBN;
+ALTER TABLE Ebook ADD COLUMN BuchId Integer(13) NOT NULL DEFAULT 0 AFTER ISBN;
+UPDATE Ebook LEFT JOIN Buch ON Buch.ISBN = Ebook.BuchISBN SET Ebook.BuchId=Buch.BuchId;
+ALTER TABLE Ebook ADD CONSTRAINT Ebook_infk_1 FOREIGN KEY (BuchId) REFERENCES Buch(BuchId);
+ALTER TABLE Ebook DROP FOREIGN KEY Ebook_ibfk_1;
+ALTER TABLE Ebook DROP BuchISBN;
 
 ALTER TABLE Hoerbuch ADD COLUMN BuchId Integer(13) NOT NULL DEFAULT 0 AFTER ISBN;
 UPDATE Hoerbuch LEFT JOIN Buch ON Buch.ISBN = Hoerbuch.BuchISBN SET Hoerbuch.BuchId=Buch.BuchId;
@@ -35,14 +43,14 @@ ALTER TABLE Ausleihe ADD COLUMN MediumId Integer(13) NOT NULL DEFAULT 0 AFTER Me
 UPDATE Ausleihe LEFT JOIN Buch ON Buch.ISBN = Ausleihe.MediumIdOld SET Ausleihe.MediumId=Buch.BuchId;
 ALTER TABLE Ausleihe DROP FOREIGN KEY Ausleihe_ibfk_2;
 ALTER TABLE Ausleihe DROP MediumIdOld;
-ALTER TABLE Ausleihe ADD CONSTRAINT Ausleihe_ibfk_3 FOREIGN KEY (MediumId) REFERENCES NichtTextMedien(NichtTextMedienId);
+ALTER TABLE Ausleihe ADD CONSTRAINT Ausleihe_ibfk_3 FOREIGN KEY (MediumId) REFERENCES NichtTextMedium(NichtTextMediumId);
 
 ALTER TABLE MediumWortZuord CHANGE MediumId MediumIdOld VARCHAR(17) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL; 
 ALTER TABLE MediumWortZuord ADD COLUMN MediumId Integer(13) NOT NULL DEFAULT 0 AFTER MediumIdOld;
 UPDATE MediumWortZuord LEFT JOIN Buch ON Buch.ISBN = MediumWortZuord.MediumIdOld SET MediumWortZuord.MediumId=Buch.BuchId;
 ALTER TABLE MediumWortZuord DROP FOREIGN KEY MediumWortZuord_ibfk_1;
 ALTER TABLE MediumWortZuord DROP MediumIdOld;
-ALTER TABLE MediumWortZuord ADD CONSTRAINT MediumWortZuord_ibfk_2 FOREIGN KEY (MediumId) REFERENCES NichtTextMedien(NichtTextMedienId);
+ALTER TABLE MediumWortZuord ADD CONSTRAINT MediumWortZuord_ibfk_3 FOREIGN KEY (MediumId) REFERENCES NichtTextMedium(NichtTextMediumId);
 
-ALTER TABLE NichtTextMedien CHANGE NichtTextMedienId MediumId INT(13) NOT NULL AUTO_INCREMENT; 
-RENAME TABLE NichtTextMedien TO Medien;
+ALTER TABLE NichtTextMedium CHANGE NichtTextMediumId MediumId INT(13) NOT NULL AUTO_INCREMENT; 
+RENAME TABLE NichtTextMedium TO Medien;
