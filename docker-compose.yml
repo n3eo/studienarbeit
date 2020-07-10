@@ -13,7 +13,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: nico_studienarbeit
+      MYSQL_DATABASE: BuchDB
       MYSQL_USER: studienarbeit
       MYSQL_PASSWORD: dbstuar2020
     networks:
