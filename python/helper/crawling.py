@@ -8,7 +8,7 @@ import time, random
 
 def get_pending(typ="text"):
     cnx = mysql.connector.connect(
-        host='db', port='3306', database='nico_studienarbeit', user='studienarbeit', password='dbstuar2020')
+        host='db', port='3306', database='BuchDB', user='studienarbeit', password='dbstuar2020')
 
     cursor = cnx.cursor(buffered=True)
 
@@ -62,7 +62,7 @@ def crawlJSON(start_value):
         return
     
     cnx = mysql.connector.connect(
-        host='db', port='3306', database='nico_studienarbeit', user='studienarbeit', password='dbstuar2020')
+        host='db', port='3306', database='BuchDB', user='studienarbeit', password='dbstuar2020')
 
     cursor = cnx.cursor(buffered=True)
 

@@ -7,7 +7,7 @@ from base64 import a85encode
 
 def get_image_urls():
     cnx = mysql.connector.connect(
-        host='db', port='3306', database='nico_studienarbeit', user='studienarbeit', password='dbstuar2020')
+        host='db', port='3306', database='BuchDB', user='studienarbeit', password='dbstuar2020')
 
     cursor = cnx.cursor(buffered=True)
 
@@ -23,7 +23,7 @@ def get_image_urls():
 def dl_image(t):
     iD, url = t
     cnx = mysql.connector.connect(
-        host='db', port='3306', database='nico_studienarbeit', user='studienarbeit', password='dbstuar2020')
+        host='db', port='3306', database='BuchDB', user='studienarbeit', password='dbstuar2020')
 
     cursor = cnx.cursor(buffered=True)
 
