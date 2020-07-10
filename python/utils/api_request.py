@@ -1,4 +1,4 @@
-import httpx, requests
+import requests
 import json
 import logging
 import mysql.connector
@@ -193,7 +193,7 @@ def extractPicture(item):
     }
 
     val_maler = {
-        "PersonenId": "",
+        "PersonId": "",
         "Beschreibung": fake.paragraph()
     }
 
@@ -207,7 +207,7 @@ def extractPicture(item):
     }
 
     val_bild = {
-        "NichtTextMedienId": "",
+        "NichtTextMediumId": "",
         "Bild": image_a85,
         "MalerId": ""
     }
@@ -239,7 +239,7 @@ def extractVideo(item):
     }
 
     val_video = {
-        "NichtTextMedienId": "",
+        "NichtTextMediumId": "",
         "Sprache": language
     }
 
@@ -299,7 +299,7 @@ def extractBook(item):
     }
 
     val_autor = {
-        "PersonenId": "",
+        "PersonId": "",
         "Beschreibung": fake.paragraph()
     }
 
@@ -344,7 +344,7 @@ def gen_audiobook(buch_isbn):
     }
 
     val_sprecher = {
-        "PersonenId": "",
+        "PersonId": "",
         "Beschreibung": fake.paragraph()
     }
 
@@ -370,7 +370,7 @@ def gen_ausleihe():
     }
 
     val_ausleiher = {
-        "PersonenId": "",
+        "PersonId": "",
         "Strasse": fake.street_address(),
         "Postleitzahl": fake.postalcode(),
         "Ort": fake.city(),
@@ -420,6 +420,6 @@ def process_json(res):
         except Exception as e:
             logging.error(f"{id}:i{num}: {e}", exc_info=False)
     logging.info(f"Done with: {id} in {round(time.time()-t_start,2)}s")
-    # dbc.set_done(id, TYP)    
-    dbc.del_id(id, TYP)
+    dbc.set_done(id, TYP)    
+    # dbc.del_id(id, TYP)
     dbc.close()

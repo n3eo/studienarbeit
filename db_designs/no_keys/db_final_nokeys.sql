@@ -18,8 +18,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `nico_studienarbeit`
+-- Datenbank: `BuchDB`
 --
+CREATE DATABASE IF NOT EXISTS `BuchDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `BuchDB`;
 
 -- --------------------------------------------------------
 
@@ -69,7 +71,7 @@ CREATE TABLE `Ausleihe` (
 DROP TABLE IF EXISTS `Ausleiher`;
 CREATE TABLE `Ausleiher` (
   `AusleiherId` int(11) NOT NULL,
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Strasse` varchar(50) NOT NULL DEFAULT 'NULL',
   `Postleitzahl` varchar(5) NOT NULL DEFAULT 'NULL',
   `Ort` varchar(30) NOT NULL,
@@ -85,7 +87,7 @@ CREATE TABLE `Ausleiher` (
 DROP TABLE IF EXISTS `Autor`;
 CREATE TABLE `Autor` (
   `AutorId` int(11) NOT NULL,
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Beschreibung` mediumtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -172,7 +174,7 @@ CREATE TABLE `Hoerbuch` (
 DROP TABLE IF EXISTS `Maler`;
 CREATE TABLE `Maler` (
   `MalerId` int(11) NOT NULL,
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Beschreibung` mediumtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -214,7 +216,7 @@ CREATE TABLE `NichtTextMedium` (
 
 DROP TABLE IF EXISTS `Person`;
 CREATE TABLE `Person` (
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Vorname` varchar(50) NOT NULL,
   `Name` varchar(100) NOT NULL,
   `Email` varchar(250) DEFAULT NULL,
@@ -255,7 +257,7 @@ CREATE TABLE `Sorte` (
 DROP TABLE IF EXISTS `Sprecher`;
 CREATE TABLE `Sprecher` (
   `SprecherId` int(11) NOT NULL,
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Beschreibung` mediumtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -345,7 +347,7 @@ ALTER TABLE `NichtTextMedium`
 -- AUTO_INCREMENT für Tabelle `Person`
 --
 ALTER TABLE `Person`
-  MODIFY `PersonenId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `PersonId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `Sorte`

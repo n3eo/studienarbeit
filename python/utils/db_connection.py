@@ -42,32 +42,32 @@ class DbConnection():
     INSERT_SCHLAGWORT = "INSERT IGNORE INTO Schlagwort(Wort,Beschreibung) VALUES(%s,%s)"
 
     INSERT_PERSON = "INSERT INTO Person(Vorname,Name,Email,Geburtsdatum) VALUES(%s,%s,%s,%s);"
-    SELECT_PERSON = "SELECT PersonenId FROM Person WHERE Vorname=%s AND Name=%s AND (Email=%s OR Email IS NULL) AND (Geburtsdatum=%s OR Geburtsdatum IS NULL);"
+    SELECT_PERSON = "SELECT PersonId FROM Person WHERE Vorname=%s AND Name=%s AND (Email=%s OR Email IS NULL) AND (Geburtsdatum=%s OR Geburtsdatum IS NULL);"
 
-    INSERT_SPRECHER = "INSERT INTO Sprecher(PersonenId,Beschreibung) VALUES(%s,%s)"
-    SELECT_SPRECHER = "SELECT SprecherId FROM Sprecher WHERE PersonenId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
+    INSERT_SPRECHER = "INSERT INTO Sprecher(PersonId,Beschreibung) VALUES(%s,%s)"
+    SELECT_SPRECHER = "SELECT SprecherId FROM Sprecher WHERE PersonId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
     INSERT_HOERBUCH = "INSERT IGNORE INTO Hoerbuch(ISBN,BuchISBN,SprecherId,VerlagId) VALUES(%s,%s,%s,%s);"
 
-    INSERT_EBOOK = "INSERT IGNORE INTO Ebooks(ISBN,BuchISBN,Dateiformat) VALUES(%s,%s,%s)"
+    INSERT_EBOOK = "INSERT IGNORE INTO Ebook(ISBN,BuchISBN,Dateiformat) VALUES(%s,%s,%s)"
 
-    INSERT_AUSLEIHER = "INSERT INTO Ausleiher(PersonenId,Strasse,Postleitzahl,Ort,Telefonnummer) VALUES(%s,%s,%s,%s,%s)"
-    SELECT_AUSLEIHER = "SELECT AusleiherId FROM Ausleiher WHERE PersonenId=%s AND Strasse=%s AND Postleitzahl=%s AND Ort=%s AND (Telefonnummer=%s OR Telefonnummer IS NULL);"
+    INSERT_AUSLEIHER = "INSERT INTO Ausleiher(PersonId,Strasse,Postleitzahl,Ort,Telefonnummer) VALUES(%s,%s,%s,%s,%s)"
+    SELECT_AUSLEIHER = "SELECT AusleiherId FROM Ausleiher WHERE PersonId=%s AND Strasse=%s AND Postleitzahl=%s AND Ort=%s AND (Telefonnummer=%s OR Telefonnummer IS NULL);"
 
-    INSERT_AUTOR = "INSERT INTO Autor(PersonenId,Beschreibung) VALUES(%s,%s)"
-    SELECT_AUTOR = "SELECT AutorId FROM Autor WHERE PersonenId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
+    INSERT_AUTOR = "INSERT INTO Autor(PersonId,Beschreibung) VALUES(%s,%s)"
+    SELECT_AUTOR = "SELECT AutorId FROM Autor WHERE PersonId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
-    INSERT_MALER = "INSERT INTO Maler(PersonenId,Beschreibung) VALUES(%s,%s)"
-    SELECT_MALER = "SELECT MalerId FROM Maler WHERE PersonenId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
+    INSERT_MALER = "INSERT INTO Maler(PersonId,Beschreibung) VALUES(%s,%s)"
+    SELECT_MALER = "SELECT MalerId FROM Maler WHERE PersonId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
-    INSERT_NICHTTEXTMEDIEN = "INSERT INTO NichtTextMedien(Titel,Untertitel,Erscheinungsjahr,Kurzbeschreibung,SorteId,Typ) VALUES(%s,%s,%s,%s,%s,%s)"
-    SELECT_NICHTTEXTMEDIEN = "SELECT NichttextmedienId FROM NichtTextMedien WHERE Titel=%s AND (Untertitel=%s OR Untertitel IS NULL) AND (Erscheinungsjahr=%s OR Erscheinungsjahr IS NULL) AND (Kurzbeschreibung=%s OR Kurzbeschreibung IS NULL) AND SorteId=%s AND Typ=%s;"
+    INSERT_NICHTTEXTMEDIUM = "INSERT INTO NichtTextMedium(Titel,Untertitel,Erscheinungsjahr,Kurzbeschreibung,SorteId,Typ) VALUES(%s,%s,%s,%s,%s,%s)"
+    SELECT_NICHTTEXTMEDIUM = "SELECT NichtTextMediumId FROM NichtTextMedium WHERE Titel=%s AND (Untertitel=%s OR Untertitel IS NULL) AND (Erscheinungsjahr=%s OR Erscheinungsjahr IS NULL) AND (Kurzbeschreibung=%s OR Kurzbeschreibung IS NULL) AND SorteId=%s AND Typ=%s;"
 
-    INSERT_BILD = "INSERT IGNORE INTO Bild(NichtTextMedienId,Bild,MalerId) VALUES(%s,%s,%s)"
-    SELECT_BILD = "SELECT BildId FROM Bild WHERE NichtTextMedienId=%s AND (Bild=%s OR BILD IS NULL) AND MalerId=%s;"
+    INSERT_BILD = "INSERT IGNORE INTO Bild(NichtTextMediumId,Bild,MalerId) VALUES(%s,%s,%s)"
+    SELECT_BILD = "SELECT BildId FROM Bild WHERE NichtTextMediumId=%s AND (Bild=%s OR BILD IS NULL) AND MalerId=%s;"
 
-    INSERT_VIDEO = "INSERT IGNORE INTO Video(NichtTextMedienId,Sprache) VALUES(%s,%s)"
-    SELECT_VIDEO = "SELECT VideoId FROM Video WHERE NichtTextMedienId=%s AND (Sprache=%s OR Sprache IS NULL);"
+    INSERT_VIDEO = "INSERT IGNORE INTO Video(NichtTextMediumId,Sprache) VALUES(%s,%s)"
+    SELECT_VIDEO = "SELECT VideoId FROM Video WHERE NichtTextMediumId=%s AND (Sprache=%s OR Sprache IS NULL);"
 
     INSERT_AUSLEIHE = "INSERT INTO Ausleihe(AusleiherId,MediumId) VALUES(%s,%s)"
 
@@ -78,7 +78,7 @@ class DbConnection():
     
     def __init__(self):
         self.__cnx = mysql.connector.connect(
-            host='db', port='3306', database='nico_studienarbeit', user='studienarbeit', password='dbstuar2020')
+            host='db', port='3306', database='BuchDB', user='studienarbeit', password='dbstuar2020')
 
         self.__cursor = self.__cnx.cursor(buffered=True)
 
@@ -159,7 +159,7 @@ class DbConnection():
 
         # print("--- Inserting Person")
         person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-        val_autor["PersonenId"] = person_id
+        val_autor["PersonId"] = person_id
         
         # print("--- Inserting Autor")
         autor_id = self.__insert_db(self.INSERT_AUTOR, val_autor, self.SELECT_AUTOR)
@@ -179,7 +179,7 @@ class DbConnection():
     def insert_hoerbuch(self, val_person, val_sprecher, val_verlag, val_hoerbuch):
         # print("--- Inserting Person")
         person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-        val_sprecher["PersonenId"] = person_id
+        val_sprecher["PersonId"] = person_id
 
         # print("--- Inserting Sprecher")
         sprecher_id = self.__insert_db(self.INSERT_SPRECHER, val_sprecher, self.SELECT_SPRECHER)
@@ -200,7 +200,7 @@ class DbConnection():
     def insert_ausleiher(self, val_person, val_ausleiher):
         # print("--- Inserting Person")
         person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-        val_ausleiher["PersonenId"] = person_id
+        val_ausleiher["PersonId"] = person_id
 
         # print("--- Inserting Ausleiher")
         self.__insert_db(self.INSERT_AUSLEIHER, val_ausleiher, self.SELECT_AUSLEIHER)
@@ -215,16 +215,16 @@ class DbConnection():
 
         # print("--- Inserting Person")
         person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-        val_maler["PersonenId"] = person_id
+        val_maler["PersonId"] = person_id
         
         # print("--- Inserting Maler")
         maler_id = self.__insert_db(self.INSERT_MALER, val_maler, self.SELECT_MALER)
         val_bild["MalerId"] = maler_id
 
-        # print("--- Inserting NichtTextMedien")
+        # print("--- Inserting NichtTextMedium")
         val_nichttextmedien["Typ"] = "Bild"
-        ntm_id = self.__insert_db(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
-        val_bild["NichtTextMedienId"] = ntm_id
+        ntm_id = self.__insert_db(self.INSERT_NICHTTEXTMEDIUM, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIUM)
+        val_bild["NichtTextMediumId"] = ntm_id
         
         # print("--- Inserting Bild")
         self.__insert_db(self.INSERT_BILD, val_bild, self.SELECT_BILD)
@@ -237,10 +237,10 @@ class DbConnection():
         sorte_id = self.__insert_db(self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
         val_nichttextmedien["SorteId"] = sorte_id
 
-        # print("--- Inserting NichtTextMedien")
+        # print("--- Inserting NichtTextMedium")
         val_nichttextmedien["Typ"] = "Video"
-        ntm_id = self.__insert_db(self.INSERT_NICHTTEXTMEDIEN, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIEN)
-        val_video["NichtTextMedienId"] = ntm_id
+        ntm_id = self.__insert_db(self.INSERT_NICHTTEXTMEDIUM, val_nichttextmedien, self.SELECT_NICHTTEXTMEDIUM)
+        val_video["NichtTextMediumId"] = ntm_id
 
         # print("--- Inserting Video")
         self.__insert_db(self.INSERT_VIDEO, val_video, self.SELECT_VIDEO)
@@ -251,7 +251,7 @@ class DbConnection():
     def insert_ausleihe(self, val_person, val_ausleiher, ISBN):
         # print("--- Inserting Person")
         person_id = self.__insert_db(self.INSERT_PERSON, val_person, self.SELECT_PERSON)
-        val_ausleiher["PersonenId"] = person_id
+        val_ausleiher["PersonId"] = person_id
 
         # print("--- Inserting Ausleiher")
         ausleiher_id = self.__insert_db(self.INSERT_AUSLEIHER, val_ausleiher, self.SELECT_AUSLEIHER)
@@ -302,7 +302,7 @@ if __name__ == "__main__":
     }
 
     val_autor = {
-        "PersonenId": "",
+        "PersonId": "",
         "Beschreibung": "Pauli aus Pauli"
     }
 
@@ -333,7 +333,7 @@ if __name__ == "__main__":
     }
 
     val_sprecher = {
-        "PersonenId": "",
+        "PersonId": "",
         "Beschreibung": "Spricht männliche charaktere"
     }
 
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     }
 
     val_maler = {
-        "PersonenId": "",
+        "PersonId": "",
         "Beschreibung": "Malt immer in Grau"
     }
 
@@ -389,7 +389,7 @@ if __name__ == "__main__":
     with open("testimg_base64") as f:
         test_bild = f.read()
     val_bild = {
-        "NichtTextMedienId": "",
+        "NichtTextMediumId": "",
         "Bild": test_bild,
         "MalerId": ""
     }
@@ -415,7 +415,7 @@ if __name__ == "__main__":
     }
 
     val_video = {
-        "NichtTextMedienId": "",
+        "NichtTextMediumId": "",
         "Sprache": "deutsch"
     }
 
@@ -432,7 +432,7 @@ if __name__ == "__main__":
     }
 
     val_ausleiher = {
-        "PersonenId": "",
+        "PersonId": "",
         "Strasse": "Nostreet 24",
         "Postleitzahl": "56789",
         "Ort": "Entenhausen",
@@ -452,7 +452,7 @@ if __name__ == "__main__":
     }
 
     val_ausleiher = {
-        "PersonenId": "",
+        "PersonId": "",
         "Strasse": "Nostreet 24",
         "Postleitzahl": "56789",
         "Ort": "Entenhausen",

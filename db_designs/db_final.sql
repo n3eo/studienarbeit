@@ -18,8 +18,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `nico_studienarbeit`
+-- Datenbank: `BuchDB`
 --
+CREATE DATABASE IF NOT EXISTS `BuchDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `BuchDB`;
 
 -- --------------------------------------------------------
 
@@ -69,7 +71,7 @@ CREATE TABLE `Ausleihe` (
 DROP TABLE IF EXISTS `Ausleiher`;
 CREATE TABLE `Ausleiher` (
   `AusleiherId` int(11) NOT NULL,
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Strasse` varchar(50) NOT NULL DEFAULT 'NULL',
   `Postleitzahl` varchar(5) NOT NULL DEFAULT 'NULL',
   `Ort` varchar(30) NOT NULL,
@@ -85,7 +87,7 @@ CREATE TABLE `Ausleiher` (
 DROP TABLE IF EXISTS `Autor`;
 CREATE TABLE `Autor` (
   `AutorId` int(11) NOT NULL,
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Beschreibung` mediumtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -172,7 +174,7 @@ CREATE TABLE `Hoerbuch` (
 DROP TABLE IF EXISTS `Maler`;
 CREATE TABLE `Maler` (
   `MalerId` int(11) NOT NULL,
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Beschreibung` mediumtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -214,7 +216,7 @@ CREATE TABLE `NichtTextMedium` (
 
 DROP TABLE IF EXISTS `Person`;
 CREATE TABLE `Person` (
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Vorname` varchar(50) NOT NULL,
   `Name` varchar(100) NOT NULL,
   `Email` varchar(250) DEFAULT NULL,
@@ -255,7 +257,7 @@ CREATE TABLE `Sorte` (
 DROP TABLE IF EXISTS `Sprecher`;
 CREATE TABLE `Sprecher` (
   `SprecherId` int(11) NOT NULL,
-  `PersonenId` int(11) NOT NULL,
+  `PersonId` int(11) NOT NULL,
   `Beschreibung` mediumtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -306,14 +308,14 @@ ALTER TABLE `Ausleihe`
 --
 ALTER TABLE `Ausleiher`
   ADD PRIMARY KEY (`AusleiherId`),
-  ADD KEY `PersonenId` (`PersonenId`);
+  ADD KEY `PersonId` (`PersonId`);
 
 --
 -- Indizes für die Tabelle `Autor`
 --
 ALTER TABLE `Autor`
   ADD PRIMARY KEY (`AutorId`),
-  ADD KEY `PersonenId` (`PersonenId`);
+  ADD KEY `PersonId` (`PersonId`);
 
 --
 -- Indizes für die Tabelle `AutorBuchZuord`
@@ -360,7 +362,7 @@ ALTER TABLE `Hoerbuch`
 --
 ALTER TABLE `Maler`
   ADD PRIMARY KEY (`MalerId`),
-  ADD KEY `PersonenId` (`PersonenId`);
+  ADD KEY `PersonId` (`PersonId`);
 
 --
 -- Indizes für die Tabelle `MediumWortZuord`
@@ -381,7 +383,7 @@ ALTER TABLE `NichtTextMedium`
 -- Indizes für die Tabelle `Person`
 --
 ALTER TABLE `Person`
-  ADD PRIMARY KEY (`PersonenId`);
+  ADD PRIMARY KEY (`PersonId`);
 
 --
 -- Indizes für die Tabelle `Schlagwort`
@@ -400,7 +402,7 @@ ALTER TABLE `Sorte`
 --
 ALTER TABLE `Sprecher`
   ADD PRIMARY KEY (`SprecherId`),
-  ADD KEY `PersonenId` (`PersonenId`);
+  ADD KEY `PersonId` (`PersonId`);
 
 --
 -- Indizes für die Tabelle `Verlag`
@@ -471,7 +473,7 @@ ALTER TABLE `NichtTextMedium`
 -- AUTO_INCREMENT für Tabelle `Person`
 --
 ALTER TABLE `Person`
-  MODIFY `PersonenId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `PersonId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `Sorte`
@@ -512,13 +514,13 @@ ALTER TABLE `Ausleihe`
 -- Constraints der Tabelle `Ausleiher`
 --
 ALTER TABLE `Ausleiher`
-  ADD CONSTRAINT `Ausleiher_ibfk_1` FOREIGN KEY (`PersonenId`) REFERENCES `Person` (`PersonenId`);
+  ADD CONSTRAINT `Ausleiher_ibfk_1` FOREIGN KEY (`PersonId`) REFERENCES `Person` (`PersonId`);
 
 --
 -- Constraints der Tabelle `Autor`
 --
 ALTER TABLE `Autor`
-  ADD CONSTRAINT `Autor_ibfk_1` FOREIGN KEY (`PersonenId`) REFERENCES `Person` (`PersonenId`);
+  ADD CONSTRAINT `Autor_ibfk_1` FOREIGN KEY (`PersonId`) REFERENCES `Person` (`PersonId`);
 
 --
 -- Constraints der Tabelle `AutorBuchZuord`
@@ -559,7 +561,7 @@ ALTER TABLE `Hoerbuch`
 -- Constraints der Tabelle `Maler`
 --
 ALTER TABLE `Maler`
-  ADD CONSTRAINT `Maler_ibfk_1` FOREIGN KEY (`PersonenId`) REFERENCES `Person` (`PersonenId`);
+  ADD CONSTRAINT `Maler_ibfk_1` FOREIGN KEY (`PersonId`) REFERENCES `Person` (`PersonId`);
 
 --
 -- Constraints der Tabelle `MediumWortZuord`
@@ -578,7 +580,7 @@ ALTER TABLE `NichtTextMedium`
 -- Constraints der Tabelle `Sprecher`
 --
 ALTER TABLE `Sprecher`
-  ADD CONSTRAINT `Sprecher_ibfk_1` FOREIGN KEY (`PersonenId`) REFERENCES `Person` (`PersonenId`);
+  ADD CONSTRAINT `Sprecher_ibfk_1` FOREIGN KEY (`PersonId`) REFERENCES `Person` (`PersonId`);
 
 --
 -- Constraints der Tabelle `Video`

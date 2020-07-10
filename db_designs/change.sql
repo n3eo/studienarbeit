@@ -4,7 +4,6 @@ INSERT INTO NichtTextMedium(Titel, Untertitel, Erscheinungsjahr, Kurzbeschreibun
 
 ALTER TABLE Buch ADD COLUMN BuchId Integer(13) NOT NULL DEFAULT 0 FIRST;
 
-# UPDATE Buch LEFT JOIN NichtTextMedium ON NichtTextMedium.Titel = Buch.Titel AND NichtTextMedium.Untertitel = Buch.Untertitel AND NichtTextMedium.Kurzbeschreibung = Buch.Kurzbeschreibung AND NichtTextMedium.SorteId = Buch.SorteId AND NichtTextMedium.Erscheinungsjahr = Buch.Erscheinungsjahr SET Buch.BuchId=NichtTextMedium.NichtTextMediumId;
 UPDATE Buch LEFT JOIN NichtTextMedium ON NichtTextMedium.Titel = Buch.Titel 
 	AND (NichtTextMedium.Untertitel = Buch.Untertitel OR NichtTextMedium.Untertitel IS NULL OR Buch.Untertitel IS NULL)
     AND (NichtTextMedium.Kurzbeschreibung = Buch.Kurzbeschreibung OR NichtTextMedium.Kurzbeschreibung IS NULL OR Buch.Kurzbeschreibung IS NULL)
@@ -22,13 +21,13 @@ ALTER TABLE Buch DROP SorteId;
 
 ALTER TABLE Ebook ADD COLUMN BuchId Integer(13) NOT NULL DEFAULT 0 AFTER ISBN;
 UPDATE Ebook LEFT JOIN Buch ON Buch.ISBN = Ebook.BuchISBN SET Ebook.BuchId=Buch.BuchId;
-ALTER TABLE Ebook ADD CONSTRAINT Ebook_infk_1 FOREIGN KEY (BuchId) REFERENCES Buch(BuchId);
+ALTER TABLE Ebook ADD CONSTRAINT Ebook_infk_2 FOREIGN KEY (BuchId) REFERENCES Buch(BuchId);
 ALTER TABLE Ebook DROP FOREIGN KEY Ebook_ibfk_1;
 ALTER TABLE Ebook DROP BuchISBN;
 
 ALTER TABLE Hoerbuch ADD COLUMN BuchId Integer(13) NOT NULL DEFAULT 0 AFTER ISBN;
 UPDATE Hoerbuch LEFT JOIN Buch ON Buch.ISBN = Hoerbuch.BuchISBN SET Hoerbuch.BuchId=Buch.BuchId;
-ALTER TABLE Hoerbuch ADD CONSTRAINT Hoerbuch_infk_1 FOREIGN KEY (BuchId) REFERENCES Buch(BuchId);
+ALTER TABLE Hoerbuch ADD CONSTRAINT Hoerbuch_infk_2 FOREIGN KEY (BuchId) REFERENCES Buch(BuchId);
 ALTER TABLE Hoerbuch DROP FOREIGN KEY Hoerbuch_ibfk_1;
 ALTER TABLE Hoerbuch DROP BuchISBN;
 
@@ -53,4 +52,4 @@ ALTER TABLE MediumWortZuord DROP MediumIdOld;
 ALTER TABLE MediumWortZuord ADD CONSTRAINT MediumWortZuord_ibfk_3 FOREIGN KEY (MediumId) REFERENCES NichtTextMedium(NichtTextMediumId);
 
 ALTER TABLE NichtTextMedium CHANGE NichtTextMediumId MediumId INT(13) NOT NULL AUTO_INCREMENT; 
-RENAME TABLE NichtTextMedium TO Medien;
+RENAME TABLE NichtTextMedium TO Medium;

@@ -40,4 +40,4 @@ UPDATE MediumWortZuord LEFT JOIN Buch ON Buch.ISBN = MediumWortZuord.MediumIdOld
 ALTER TABLE MediumWortZuord DROP MediumIdOld;
 
 ALTER TABLE NichtTextMedium CHANGE NichtTextMediumId MediumId INT(13) NOT NULL AUTO_INCREMENT; 
-RENAME TABLE NichtTextMedium TO Medien;
+RENAME TABLE NichtTextMedium TO Medium;
