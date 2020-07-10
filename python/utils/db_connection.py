@@ -25,6 +25,7 @@ class DbConnection():
     __instance = None
     __cursor = None
 
+    # all the statements used 
     INSERT_SORTE = "INSERT INTO Sorte(Name,Beschreibung) VALUES(%s,%s)"
     SELECT_SORTE = "SELECT SorteId FROM Sorte WHERE Name=%s -- AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
@@ -71,17 +72,21 @@ class DbConnection():
 
     INSERT_AUSLEIHE = "INSERT INTO Ausleihe(AusleiherId,MediumId) VALUES(%s,%s)"
 
+    # singelton implementation
     # def __new__(cls):
     #     if DbConnection.__instance is None:
     #         DbConnection.__instance = object.__new__(cls)
     #     return DbConnection.__instance
     
     def __init__(self):
+        # open connection to database
         self.__cnx = mysql.connector.connect(
             host='db', port='3306', database='BuchDB', user='studienarbeit', password='dbstuar2020')
 
+        # cursor to execute statements
         self.__cursor = self.__cnx.cursor(buffered=True)
 
+    # opening and closing of connection
     def __del__(self):
         self.__cnx.close()
     def close(self):
@@ -114,16 +119,23 @@ class DbConnection():
     
     # @timeit
     def __insert_db(self, INSERT, values, SELECT=None):
+        # this function handels all the insertion and duplication checks
         val = list(values.values())
 
+        # checks for select statement and then searches for duplicate
         first_result = None
         if SELECT:
             self.__cursor.execute(SELECT, val)
+            # use fetchall/fetchone/fetchmany to collect the results
             first_result = self.__cursor.fetchone()
-                
+        
+        # if no duplicate is found, insert data
         if not first_result:
             self.__cursor.execute(INSERT, val)
             self.__cnx.commit()
+            # differ between an insertion that provides the unique id
+            # and an insertion where the row id is used
+            # to return the correct
             if INSERT.find("IGNORE") == -1:
                 return self.__cursor.lastrowid
             else:
@@ -173,7 +185,6 @@ class DbConnection():
             # print("--- Done")
     
     # ### Hörbuch
-    # self.INSERT_SORTE, self.INSERT_VERLAG, self.INSERT_BUCH, self.INSERT_SPRECHER
 
     # @timeit
     def insert_hoerbuch(self, val_person, val_sprecher, val_verlag, val_hoerbuch):

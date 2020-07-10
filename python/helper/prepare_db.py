@@ -5,16 +5,20 @@ import json
 TYPES = ["text", "still_image", "moving_image"]
 
 def main():
+    # connect to database
     cnx = mysql.connector.connect(
         host='db', port='3306', database='BuchDB', user='studienarbeit', password='dbstuar2020')
 
+    # cursor is used to execute commands
     cursor = cnx.cursor()
 
     for typ in TYPES:
+        # with .execute() you can execute every sql statement
         cursor.execute(f"DROP TABLE IF EXISTS `api_request_{typ}`;")
         cursor.execute(f"CREATE TABLE `api_request_{typ}` (`ID` int(11) NOT NULL,`Status` varchar(20) COLLATE utf8_bin NOT NULL DEFAULT 'Pending', `JSON` longblob NULL, `HASH` VARCHAR(64) NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
         cursor.execute(f"ALTER TABLE `api_request_{typ}` ADD PRIMARY KEY (`ID`);")
         cursor.execute(f"ALTER TABLE `api_request_{typ}` ADD UNIQUE(`HASH`); ")
+        # commit to apply changes
         cnx.commit()
 
         total = json.loads(requests.get(

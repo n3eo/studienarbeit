@@ -134,6 +134,7 @@ def extractURL(location_flattend, LOCATION_PATHS = ["0_url_1_#text"]):
     return getInformationFromDifferentPaths(location_flattend, LOCATION_PATHS)
 
 def extractInformation(item):
+    # extracts general information, available for every type
     titleInfo_flattend = flattenObj(nestedDictGet(item, "titleInfo"))
     
     title = titleInfo_flattend.get("title") if titleInfo_flattend.get("title") is not None else titleInfo_flattend.get("0_title")
@@ -160,6 +161,7 @@ def extractInformation(item):
 
 # @timeit
 def extractPicture(item):
+    # downloads the specialized information for pictures
     title, subtitle, publish_date, abstract, creator, subjects, genre = extractInformation(item)
     
     # only gets small preview
@@ -216,6 +218,7 @@ def extractPicture(item):
 
 # @timeit
 def extractVideo(item):
+    # downloads the specialized information for vidoes
     title, subtitle, publish_date, abstract, _, subjects, genre = extractInformation(item)
 
     language_flattend = flattenObj(nestedDictGet(item, "language"))
@@ -247,6 +250,7 @@ def extractVideo(item):
 
 # @timeit
 def extractBook(item):
+    # downloads the specialized information for books
     title, subtitle, publish_date, abstract, creator, subjects, genre = extractInformation(item)
     
     language_flattend = flattenObj(nestedDictGet(item, "language"))
@@ -384,6 +388,7 @@ def process_json(res):
     id, TYP = res
 
     t_start = time.time()
+    # create a new instance of the database connection
     dbc = DBC()
     logging.info(f"Loading: {id}")
     
@@ -392,6 +397,7 @@ def process_json(res):
     obj = json.loads(j)
     logging.info(f"Loaded: {id}")
 
+    # iterate over the items
     for num, item in enumerate(obj["items"]["mods"]):
         try:
             if item["typeOfResource"] == "text":
@@ -421,5 +427,5 @@ def process_json(res):
             logging.error(f"{id}:i{num}: {e}", exc_info=False)
     logging.info(f"Done with: {id} in {round(time.time()-t_start,2)}s")
     dbc.set_done(id, TYP)    
-    # dbc.del_id(id, TYP)
+    dbc.del_id(id, TYP)
     dbc.close()
