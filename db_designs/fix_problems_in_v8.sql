@@ -1,0 +1,10 @@
+UPDATE Person SET Vorname=(@temp:=Vorname), Vorname = Name, Name = REPLACE(@temp, ",", "") WHERE Vorname like "%,%";
+UPDATE Person SET Vorname=REPLACE(Vorname, "(", "") WHERE Vorname like "%(%";
+UPDATE Person SET Name=REPLACE(Vorname, "(", "") WHERE Name like "%(%";
+UPDATE Person SET Vorname=REPLACE(Vorname, "(", "") WHERE Vorname like "%(%";
+UPDATE Person SET Name=REPLACE(Vorname, ")", "") WHERE Name like "%)%";
+UPDATE Person SET Email=REPLACE(Email, ")", "") WHERE Email like "%)%";
+UPDATE Person SET Email=REPLACE(Email, "(", "") WHERE Email like "%(%";
+UPDATE Person SET Email=REPLACE(Email, ",", "") WHERE Email like "%,%";
+ALTER TABLE `Ausleihe` DROP `TransaktionsId`;
+ALTER TABLE `AutorBuchZuord` DROP `AutorBuchZuordId`;

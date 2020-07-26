@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Erstellungszeit: 26. Mai 2020 um 09:51
+-- Erstellungszeit: 26. Jul 2020 um 13:44
 -- Server-Version: 5.7.29
 -- PHP-Version: 7.4.4
 
@@ -25,37 +25,12 @@ USE `BuchDB`;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `MediumWortZuord`;
-DROP TABLE IF EXISTS `Schlagwort`;
-
-DROP TABLE IF EXISTS `Ausleihe`;
-
-DROP TABLE IF EXISTS `Video`;
-DROP TABLE IF EXISTS `Bild`;
-DROP TABLE IF EXISTS `NichtTextMedium`;
-
-DROP TABLE IF EXISTS `Ebook`;
-DROP TABLE IF EXISTS `Hoerbuch`;
-
-DROP TABLE IF EXISTS `AutorBuchZuord`;
-DROP TABLE IF EXISTS `Buch`;
-
-DROP TABLE IF EXISTS `Sorte`;
-DROP TABLE IF EXISTS `Verlag`;
-
-DROP TABLE IF EXISTS `Maler`;
-DROP TABLE IF EXISTS `Ausleiher`;
-DROP TABLE IF EXISTS `Sprecher`;
-DROP TABLE IF EXISTS `Autor`;
-DROP TABLE IF EXISTS `Person`;
-
 --
 -- Tabellenstruktur für Tabelle `Ausleihe`
 --
 
 DROP TABLE IF EXISTS `Ausleihe`;
 CREATE TABLE `Ausleihe` (
-  `TransaktionsId` int(11) NOT NULL,
   `AusleiherId` int(11) NOT NULL,
   `MediumId` varchar(17) NOT NULL,
   `Ausleihdatum` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -99,7 +74,6 @@ CREATE TABLE `Autor` (
 
 DROP TABLE IF EXISTS `AutorBuchZuord`;
 CREATE TABLE `AutorBuchZuord` (
-  `AutorBuchZuordId` int(11) NOT NULL,
   `AutorId` int(11) NOT NULL,
   `ISBN` varchar(17) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -299,7 +273,6 @@ CREATE TABLE `Video` (
 -- Indizes für die Tabelle `Ausleihe`
 --
 ALTER TABLE `Ausleihe`
-  ADD PRIMARY KEY (`TransaktionsId`),
   ADD KEY `AusleiherId` (`AusleiherId`),
   ADD KEY `MediumId` (`MediumId`);
 
@@ -321,7 +294,6 @@ ALTER TABLE `Autor`
 -- Indizes für die Tabelle `AutorBuchZuord`
 --
 ALTER TABLE `AutorBuchZuord`
-  ADD PRIMARY KEY (`AutorBuchZuordId`),
   ADD KEY `AutorId` (`AutorId`),
   ADD KEY `ISBN` (`ISBN`);
 
@@ -422,12 +394,6 @@ ALTER TABLE `Video`
 --
 
 --
--- AUTO_INCREMENT für Tabelle `Ausleihe`
---
-ALTER TABLE `Ausleihe`
-  MODIFY `TransaktionsId` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT für Tabelle `Ausleiher`
 --
 ALTER TABLE `Ausleiher`
@@ -438,12 +404,6 @@ ALTER TABLE `Ausleiher`
 --
 ALTER TABLE `Autor`
   MODIFY `AutorId` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `AutorBuchZuord`
---
-ALTER TABLE `AutorBuchZuord`
-  MODIFY `AutorBuchZuordId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `Bild`
