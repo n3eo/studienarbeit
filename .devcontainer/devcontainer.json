@@ -6,5 +6,6 @@
     "extensions": [
         "ms-python.python",
         "pejmannikram.vscode-auto-scroll"
-    ]
+    ],
+    "postCreateCommand": "pip install -r /app/python/requirements.txt"
 }
