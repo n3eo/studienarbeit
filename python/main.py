@@ -33,9 +33,10 @@ if __name__ == "__main__":
     results = results[:4096]
     dbc.close()
 
-    workers = 16
-    
+    workers = 2
 
-    with ProcessPoolExecutor(max_workers=workers) as executor:
-        for _ in executor.map(process_json, results):
-            pass
+    # with ProcessPoolExecutor(max_workers=workers) as executor:
+    #     for _ in executor.map(process_json, results):
+    #         pass
+    for elem in results:
+        process_json(elem)

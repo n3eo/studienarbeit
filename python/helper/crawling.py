@@ -102,7 +102,7 @@ if __name__ == "__main__":
         logging.info("Nothing to crawl. Crawling done.")
         exit(1)
     
-    results = results[:384]
+    results = results[:256]
 
     with ProcessPoolExecutor(max_workers=workers) as executor:
         for _ in executor.map(crawlJSON, results):

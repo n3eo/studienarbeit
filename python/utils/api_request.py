@@ -155,7 +155,7 @@ def extractInformation(item):
     Faker.seed( hashlib.blake2b(bytes(str(title) + str(sorted(subjects)), "utf-8") ).digest() )
 
     genre_flattend = flattenObj(nestedDictGet(item, "genre")) 
-    genre = extractOneGenre(genre_flattend) if genre_flattend != {} else fake.word()
+    genre = extractOneGenre(genre_flattend) if genre_flattend != {} else None
     
     return title, subtitle, publish_date, abstract, creator, subjects, genre
 
@@ -182,15 +182,15 @@ def extractPicture(item):
     Faker.seed( hashlib.md5(bytes(str(title) + str(sorted(subjects)), "utf-8")).digest() )
     
     val_sorte = {
-        "Name": genre if genre else fake.word(),
-        "Beschreibung": fake.paragraph()
+        "Name": genre if genre else None,
+        "Beschreibung": fake.paragraph() if genre else None
     }
 
-    creator = creator if creator else fake.name()
+    creator = gen_creator(creator if creator else fake.name())
     val_person = {
-        "Vorname": creator.split(" ")[0],
-        "Name": creator.split(" ")[-1],
-        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1].lower()}.{fake.tld()}",
+        "Vorname": creator[0],
+        "Name": creator[-1],
+        "Email": f"{creator[0].lower()}@{creator[-1].lower()}.{fake.tld()}",
         "Geburtsdatum": fake.date_of_birth()
     }
 
@@ -228,8 +228,8 @@ def extractVideo(item):
     Faker.seed( hashlib.md5(bytes(str(title) + str(sorted(subjects)), "utf-8")).digest() )
 
     val_sorte = {
-        "Name": genre if genre else fake.word(),
-        "Beschreibung": fake.paragraph()
+        "Name": genre if genre else None,
+        "Beschreibung": fake.paragraph() if genre else None
     }
 
     val_nichttextmedien = {
@@ -247,6 +247,11 @@ def extractVideo(item):
     }
 
     return val_sorte, val_nichttextmedien, val_video
+
+def gen_creator(creator):
+    if creator.find(",")>=0:
+        return list(reversed([ elem.strip() for elem in creator.split(",") ]))
+    return creator.split(" ")
 
 # @timeit
 def extractBook(item):
@@ -294,11 +299,11 @@ def extractBook(item):
         "Sprache": language
     }
 
-    creator = creator if creator else fake.name()
+    creator = gen_creator(creator if creator else fake.name())
     val_person = {
-        "Vorname": creator.split(" ")[0],
-        "Name": creator.split(" ")[-1],
-        "Email": f"{creator.split(' ')[0]}@{creator.split(' ')[-1].lower()}.{fake.tld()}",
+        "Vorname": creator[0],
+        "Name": creator[-1],
+        "Email": f"{creator[0].lower()}@{creator[-1].lower()}.{fake.tld()}",
         "Geburtsdatum": fake.date_of_birth()
     }
 
@@ -308,8 +313,8 @@ def extractBook(item):
     }
 
     val_sorte = {
-        "Name": genre if genre else fake.word(),
-        "Beschreibung": fake.paragraph()
+        "Name": genre if genre else None,
+        "Beschreibung": fake.paragraph() if genre else None
     }
     
     return val_schlagwort, val_verlag, val_buch, val_person, val_autor, val_sorte

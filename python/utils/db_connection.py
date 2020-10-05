@@ -35,7 +35,7 @@ class DbConnection():
     INSERT_BUCH = "INSERT IGNORE INTO Buch(ISBN,Titel,Untertitel,VerlagId,Erscheinungsjahr,SorteId,Kurzbeschreibung,Preis,Auflage,Sprache) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
     
     INSERT_AUTORBUCHZUORD = "INSERT INTO AutorBuchZuord(AutorId,ISBN) VALUES(%s,%s);"
-    SELECT_AUTORBUCHZUORD = "SELECT AutorBuchZuordId FROM AutorBuchZuord WHERE AutorId=%s AND ISBN=%s;"
+    SELECT_AUTORBUCHZUORD = "SELECT * FROM AutorBuchZuord WHERE AutorId=%s AND ISBN=%s;"
 
     INSERT_MEDIUMWORTZUORD = "INSERT INTO MediumWortZuord(MediumId,Wort) VALUES(%s,%s)"
     SELECT_MEDIUMWORTZUORD = "SELECT MediumWortId FROM MediumWortZuord WHERE MediumId=%s AND Wort=%s;"
@@ -62,7 +62,7 @@ class DbConnection():
     SELECT_MALER = "SELECT MalerId FROM Maler WHERE PersonId=%s AND (Beschreibung=%s OR Beschreibung IS NULL);"
 
     INSERT_NICHTTEXTMEDIUM = "INSERT INTO NichtTextMedium(Titel,Untertitel,Erscheinungsjahr,Kurzbeschreibung,SorteId,Typ) VALUES(%s,%s,%s,%s,%s,%s)"
-    SELECT_NICHTTEXTMEDIUM = "SELECT NichtTextMediumId FROM NichtTextMedium WHERE Titel=%s AND (Untertitel=%s OR Untertitel IS NULL) AND (Erscheinungsjahr=%s OR Erscheinungsjahr IS NULL) AND (Kurzbeschreibung=%s OR Kurzbeschreibung IS NULL) AND SorteId=%s AND Typ=%s;"
+    SELECT_NICHTTEXTMEDIUM = "SELECT NichtTextMediumId FROM NichtTextMedium WHERE Titel=%s AND (Untertitel=%s OR Untertitel IS NULL) AND (Erscheinungsjahr=%s OR Erscheinungsjahr IS NULL) AND (Kurzbeschreibung=%s OR Kurzbeschreibung IS NULL) AND (SorteId=%s OR SorteId IS NULL) AND Typ=%s;"
 
     INSERT_BILD = "INSERT IGNORE INTO Bild(NichtTextMediumId,Bild,MalerId) VALUES(%s,%s,%s)"
     SELECT_BILD = "SELECT BildId FROM Bild WHERE NichtTextMediumId=%s AND (Bild=%s OR BILD IS NULL) AND MalerId=%s;"
@@ -146,8 +146,11 @@ class DbConnection():
     # @timeit
     def insert_book(self, val_schlagworte, val_verlag, val_buch, val_person, val_autor, val_sorte):
         # print("--- Inserting Sorte")
-        sorte_id = self.__insert_db(
-            self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        if val_sorte.get("Name") is not None:
+            sorte_id = self.__insert_db(
+                self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        else:
+            sorte_id = None
         val_buch["SorteId"] = sorte_id
 
         # print("--- Inserting Verlag")
@@ -221,7 +224,11 @@ class DbConnection():
     # @timeit
     def insert_bild(self, val_sorte, val_person, val_maler, val_nichttextmedien, val_bild):
         # print("--- Inserting Sorte")
-        sorte_id = self.__insert_db(self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        if val_sorte.get("Name") is not None:
+            sorte_id = self.__insert_db(
+                self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        else:
+            sorte_id = None
         val_nichttextmedien["SorteId"] = sorte_id
 
         # print("--- Inserting Person")
@@ -245,7 +252,11 @@ class DbConnection():
     # @timeit
     def insert_video(self, val_sorte, val_nichttextmedien, val_video):
         # print("--- Inserting Sorte")
-        sorte_id = self.__insert_db(self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        if val_sorte.get("Name") is not None:
+            sorte_id = self.__insert_db(
+                self.INSERT_SORTE, val_sorte, self.SELECT_SORTE)
+        else:
+            sorte_id = None
         val_nichttextmedien["SorteId"] = sorte_id
 
         # print("--- Inserting NichtTextMedium")

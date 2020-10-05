@@ -101,7 +101,7 @@ CREATE TABLE `Bild` (
 DROP TABLE IF EXISTS `Buch`;
 CREATE TABLE `Buch` (
   `ISBN` varchar(17) NOT NULL,
-  `Titel` text NOT NULL,
+  `Titel` varchar(2000) NOT NULL,
   `Untertitel` varchar(500) DEFAULT NULL,
   `VerlagId` int(11) DEFAULT NULL,
   `Erscheinungsjahr` smallint(4) DEFAULT NULL,
@@ -174,11 +174,11 @@ CREATE TABLE `MediumWortZuord` (
 DROP TABLE IF EXISTS `NichtTextMedium`;
 CREATE TABLE `NichtTextMedium` (
   `NichtTextMediumId` int(13) NOT NULL,
-  `Titel` text NOT NULL,
+  `Titel` varchar(2000) NOT NULL,
   `Untertitel` varchar(500) DEFAULT NULL,
   `Erscheinungsjahr` smallint(4) DEFAULT NULL,
   `Kurzbeschreibung` mediumtext,
-  `SorteId` int(11) NOT NULL,
+  `SorteId` int(11) DEFAULT NULL,
   `Typ` enum('Bild','Video') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

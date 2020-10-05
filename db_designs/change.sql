@@ -7,7 +7,7 @@ ALTER TABLE Buch ADD COLUMN BuchId Integer(13) NOT NULL DEFAULT 0 FIRST;
 UPDATE Buch LEFT JOIN NichtTextMedium ON NichtTextMedium.Titel = Buch.Titel 
 	AND (NichtTextMedium.Untertitel = Buch.Untertitel OR NichtTextMedium.Untertitel IS NULL OR Buch.Untertitel IS NULL)
     AND (NichtTextMedium.Kurzbeschreibung = Buch.Kurzbeschreibung OR NichtTextMedium.Kurzbeschreibung IS NULL OR Buch.Kurzbeschreibung IS NULL)
-    AND NichtTextMedium.SorteId = Buch.SorteId 
+    AND (NichtTextMedium.SorteId = Buch.SorteId OR NichtTextMedium.SorteId IS NULL OR Buch.SorteId IS NULL)
     AND (NichtTextMedium.Erscheinungsjahr = Buch.Erscheinungsjahr OR NichtTextMedium.Erscheinungsjahr IS NULL OR Buch.Erscheinungsjahr IS NULL)
     SET Buch.BuchId=NichtTextMedium.NichtTextMediumId;
 

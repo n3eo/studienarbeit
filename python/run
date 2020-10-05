@@ -1,10 +1,10 @@
 #!/bin/bash
-for i in {1..300}
+for i in {1..600}
 do
    echo "Starting with $i"
    python helper/crawling.py
    echo "Processing    $i"
    python main.py
    echo "Finished with $i"
-   sleep 10s
+   sleep 1s
 done
